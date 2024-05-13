@@ -1,7 +1,7 @@
 import numpy as np
 import random
 
-class PSO:    
+class PSO:
     NUMERO_POBLACION = 10
     NUMERO_GENERACION = 30
 
@@ -165,4 +165,4 @@ class PSO:
 if __name__ == '__main__':
     pso = PSO()
     pso.start()
-    print(pso)
+    print(-160) 
