@@ -1,5 +1,17 @@
 import numpy as np
 import random
+from matplotlib import pyplot as plt
+
+#             /$$$$$$                               
+#            /$$__  $$                              
+#   /$$$$$$ | $$  \__/  /$$$$$$   /$$$$$$  /$$$$$$$ 
+#  /$$__  $$| $$$$     /$$__  $$ /$$__  $$| $$__  $$
+# | $$$$$$$$| $$_/    | $$  \__/| $$$$$$$$| $$  \ $$
+# | $$_____/| $$      | $$      | $$_____/| $$  | $$
+# |  $$$$$$$| $$      | $$      |  $$$$$$$| $$  | $$
+#  \_______/|__/      |__/       \_______/|__/  |__/
+                                                  
+
 
 class PSO:
     NUMERO_POBLACION = 10
@@ -17,8 +29,8 @@ class PSO:
     _pbest = np.zeros((NUMERO_POBLACION, 2))
     _pbest_fitness = np.zeros(NUMERO_POBLACION)
 
-    limite_inferior = -20
-    limite_superior = 20
+    MAX = -20
+    MIN = 20
 
     
     W = 0.95
@@ -39,10 +51,12 @@ class PSO:
         self._calculo_fitness()
         # Inicilizacion del gBest
         self._calculo_gbest_()
+
+        self.convergence = []
         
     #genera valores aleatorios
     def _generar_individuo(self):
-        # Crear un arreg
+        # Crear un arreglo
         _list = []
         # Solo dos valores
         for _ in range(2):
@@ -89,8 +103,6 @@ class PSO:
         self._gbest_f = self._pbest_fitness[index] 
         self._gbest_c = self._poblacion[index]
 
-            
-            
     # Calculo de fitness
     def _calculo_fitness(self):
         # (x1 ** 3 + x2 ** 3) / 100
@@ -114,24 +126,23 @@ class PSO:
                 r2 = random.random()
                 v2 = self.W * self._velocidad[i][j] + self.C1 * r1 * (self._pbest[i][j] - self._velocidad[i][j]) + self.C2 * r2 * (self._gbest_c[j] - self._velocidad[i][j])
                 
-                if v2 < self.limite_inferior:
-                    self._velocidad[i][j] = self.limite_inferior
-                elif v2 > self.limite_superior:
-                    self._velocidad[i][j] = self.limite_superior
-                else:
-                   self._velocidad[i][j] = v2
+                # TODO: Restricciones
+                self._velocidad[i][j] = self._restriccion_reflex_(v2)
+
+                # self._velocidad[i][j] = self._restriccion_random_(v2)
+                
 
     #Actualización de la población
     def _actualizar_poblacion(self):
         for i in range (self.NUMERO_POBLACION):
             for j in range(len(self._velocidad[i])):
                 self._poblacion[i][j] = self._poblacion[i][j] + self._velocidad[i][j] 
-                if self._poblacion[i][j] < self.limite_inferior:
-                    self._poblacion[i][j] = self.limite_inferior
-                elif self._poblacion[i][j] > self.limite_superior:
-                    self._poblacion[i][j] = self.limite_superior
-                else:
-                    self._poblacion[i][j] = self._poblacion[i][j] 
+
+
+
+                self._poblacion[i][j] = self._restriccion_reflex_(self._poblacion[i][j]) 
+                
+                # self._poblacion[i][j] = self._restriccion_random_(self._poblacion[i][j])
                     
     #Calcular el nuevo fitness
     def _actualizar_fitness(self):
@@ -155,14 +166,80 @@ class PSO:
 
             self._actualizar_gbest()
 
+            print("Generacion:", generacion)
+            print("Coordenadas:",self._gbest_c)
+            print("Fitness:",self._gbest_f)
+
+
+            self.convergence.append(self._gbest_f)
             generacion += 1
 
+
+        self.convergence = sorted(self.convergence, reverse=True)
+        self.plot_convergence()
+    
+    def _restriccion_random_(self , eval):
+        if eval > self.MAX or eval < self.MIN:
+                    eval = self.MIN + random.uniform(0, 1) * (self.MAX - self.MIN)
+        return eval
+    
+    
+    def _restriccion_reflex_(self, eval, lower_limit=-20, upper_limit=20):
+        if eval < lower_limit:
+            eval = lower_limit + abs(eval - lower_limit)
+        elif eval > upper_limit:
+            eval = upper_limit - abs(eval - upper_limit)
+        return eval
         
     #imprime el arreglo
     def __str__(self) -> str: 
         return f"""GBEST FITNESS \n {self._gbest_f}\n INDIVIDUO \n{self._gbest_c}"""
 
+
+    def plot_convergence(self):
+        # Crear una lista de generaciones
+        generaciones = np.arange(1, self.NUMERO_GENERACION + 1)
+
+        # Crear el gráfico
+        plt.plot(generaciones, self.convergence, marker='o', linestyle='-')
+        plt.title('Convergencia de PSO')
+        plt.xlabel('Generación')
+        plt.ylabel('Mejor Fitness')
+        plt.grid(True)
+        plt.show()
+
+
 if __name__ == '__main__':
     pso = PSO()
+    print("""
+                                                          
+                                                          
+PPPPPPPPPPPPPPPPP      SSSSSSSSSSSSSSS      OOOOOOOOO     
+P::::::::::::::::P   SS:::::::::::::::S   OO:::::::::OO   
+P::::::PPPPPP:::::P S:::::SSSSSS::::::S OO:::::::::::::OO 
+PP:::::P     P:::::PS:::::S     SSSSSSSO:::::::OOO:::::::O
+  P::::P     P:::::PS:::::S            O::::::O   O::::::O
+  P::::P     P:::::PS:::::S            O:::::O     O:::::O
+  P::::PPPPPP:::::P  S::::SSSS         O:::::O     O:::::O
+  P:::::::::::::PP    SS::::::SSSSS    O:::::O     O:::::O
+  P::::PPPPPPPPP        SSS::::::::SS  O:::::O     O:::::O
+  P::::P                   SSSSSS::::S O:::::O     O:::::O
+  P::::P                        S:::::SO:::::O     O:::::O
+  P::::P                        S:::::SO::::::O   O::::::O
+PP::::::PP          SSSSSSS     S:::::SO:::::::OOO:::::::O
+P::::::::P          S::::::SSSSSS:::::S OO:::::::::::::OO 
+P::::::::P          S:::::::::::::::SS    OO:::::::::OO   
+PPPPPPPPPP           SSSSSSSSSSSSSSS        OOOOOOOOO     
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+                                                          
+""")
     pso.start()
-    print(-160) 
+    print("\n")
+    print(pso)
+
+    
