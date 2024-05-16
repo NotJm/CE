@@ -155,28 +155,31 @@ class PSO:
     def _actualizar_gbest(self):
         self._calculo_gbest_()
 
-    def start(self):
-        generacion = 0
-        while generacion < self.NUMERO_GENERACION:
-            self._actualizar_velocidad()
+       def start(self):
+         for corrida in range(self.NUM_CORRIDAS):
+            # Restablecer población y variables
+            self._reset()
+            generacion = 0
+            while generacion < self.NUMERO_GENERACION:
+                self._actualizar_velocidad()
 
-            self._actualizar_poblacion()
+                self._actualizar_poblacion()
 
-            self._actualizar_fitness()
+                self._actualizar_fitness()
 
-            self._actualizar_gbest()
+                self._actualizar_gbest()
 
-            print("Generacion:", generacion)
-            print("Coordenadas:",self._gbest_c)
-            print("Fitness:",self._gbest_f)
-
-
-            self.convergence.append(self._gbest_f)
-            generacion += 1
+                print("Generacion:", generacion)
+                print("Coordenadas:",self._gbest_c)
+                print("Fitness:",self._gbest_f)
 
 
-        self.convergence = sorted(self.convergence, reverse=True)
-        self.plot_convergence()
+                self.convergence.append(self._gbest_f)
+                generacion += 1
+
+
+            self.convergence = sorted(self.convergence, reverse=True)
+            self.plot_convergence()
     
     def _restriccion_random_(self , eval):
         if eval > self.MAX or eval < self.MIN:
@@ -209,6 +212,22 @@ class PSO:
         plt.show()
 
 
+     def _reset(self):
+        # Restablecer la población, velocidad, fitness, etc.
+        self._poblacion = np.zeros((self.NUMERO_POBLACION, 2))
+        self._velocidad = np.zeros((self.NUMERO_POBLACION, 2))
+        self._fitness = np.zeros(self.NUMERO_POBLACION)
+        self._pbest = np.zeros((self.NUMERO_POBLACION, 2))
+        self._pbest_fitness = np.zeros(self.NUMERO_POBLACION)
+        self._gbest_c = np.zeros(2)
+        self._gbest_f = 0
+
+        self._generar_poblacion()
+        self._generar_velocidad()
+        self._calculo_fitness()
+        self._calculo_gbest_()
+        
+        
 if __name__ == '__main__':
     pso = PSO()
     print("""
