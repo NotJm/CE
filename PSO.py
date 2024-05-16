@@ -126,10 +126,14 @@ class PSO:
                 r2 = random.random()
                 v2 = self.W * self._velocidad[i][j] + self.C1 * r1 * (self._pbest[i][j] - self._velocidad[i][j]) + self.C2 * r2 * (self._gbest_c[j] - self._velocidad[i][j])
                 
-                # TODO: Restricciones
-                self._velocidad[i][j] = self._restriccion_reflex_(v2)
-
+                # ! Restriccion reflex
+                # self._velocidad[i][j] = self._restriccion_reflex_(v2)
+                
+                # ! Restriccion random
                 # self._velocidad[i][j] = self._restriccion_random_(v2)
+
+                # ! Restriccion bouncy
+                self._velocidad[i][j] = self._restriccion_bouncy(v2)
                 
 
     #Actualización de la población
@@ -139,10 +143,14 @@ class PSO:
                 self._poblacion[i][j] = self._poblacion[i][j] + self._velocidad[i][j] 
 
 
-
-                self._poblacion[i][j] = self._restriccion_reflex_(self._poblacion[i][j]) 
+                # ! Restriccion reflex
+                # self._poblacion[i][j] = self._restriccion_reflex_(self._poblacion[i][j]) 
                 
+                # ! Restriccion random
                 # self._poblacion[i][j] = self._restriccion_random_(self._poblacion[i][j])
+
+                #! Restriccion bouncy
+                self._poblacion[i][j] = self._restriccion_bouncy(self._poblacion[i][j])
                     
     #Calcular el nuevo fitness
     def _actualizar_fitness(self):
@@ -193,7 +201,17 @@ class PSO:
         elif eval > upper_limit:
             eval = upper_limit - abs(eval - upper_limit)
         return eval
+
+    def _restriccion_bouncy(self, eval):
+        if eval in range(self.MAX, self.MIN):
+            return eval
+        else:
+            if eval < self.MAX:
+                return self.MAX
+            else:
+                return self.MIN
         
+
     #imprime el arreglo
     def __str__(self) -> str: 
         return f"""GBEST FITNESS \n {self._gbest_f}\n INDIVIDUO \n{self._gbest_c}"""
