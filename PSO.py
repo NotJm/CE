@@ -1,8 +1,6 @@
 import numpy as np
 import random
-from matplotlib import pyplot as plt
 import math
-
 #             /$$$$$$                               
 #            /$$__  $$                              
 #   /$$$$$$ | $$  \__/  /$$$$$$   /$$$$$$  /$$$$$$$ 
@@ -11,14 +9,11 @@ import math
 # | $$_____/| $$      | $$      | $$_____/| $$  | $$
 # |  $$$$$$$| $$      | $$      |  $$$$$$$| $$  | $$
 #  \_______/|__/      |__/       \_______/|__/  |__/
-                                                  
-NUMERO_CORRIDAS = 150
-
 class PSO:
-    NUMERO_POBLACION = 10
+    NUMERO_POBLACION = 100
     NUMERO_GENERACION = 1000
-    NUMERO_DE_DIMENSIONES = 10
-
+    NUMERO_DE_DIMENSIONES = 20
+    
     #numero de individios en la poblacion
     # 10 son las filas y 2 son las columnas
     _poblacion = np.zeros((NUMERO_POBLACION, NUMERO_DE_DIMENSIONES))
@@ -27,29 +22,34 @@ class PSO:
 
     _gbest_c = np.zeros(NUMERO_DE_DIMENSIONES)  #gbest cordenadas(posicion)
     _gbest_f = 0  #gbest fitness
+    _gbest_v = 0
 
     _pbest = np.zeros((NUMERO_POBLACION, NUMERO_DE_DIMENSIONES))
     _pbest_fitness = np.zeros(NUMERO_POBLACION)
     
     _data_fitness = []
-
-    MAX = 20
-    MIN = -20
-
+    _data_violacion = []
     
+    _violaciones = 0
+    _factibles = []
+    _violaciones_individuo = []
+    _ultimo_factible = False
+    
+
+    MAX = 10
+    MIN = 0
+
     W = 0.95
     C1 = 1.4944
     C2 = 1.4944
     F5 = -1000
     F1 = -1400
 
-
-
     # Constructor
-    def __init__(self, restriccion: str, function:str):
+    def __init__(self, limite: str):
         # Inicializar restriccion
-        self.restriccion = restriccion
-        self.function = function
+        self.limite = limite
+        # self.function = function
         # Inicializacion de los individuos
         self._generar_individuo()
         # Inicializacion de la poblacion
@@ -57,18 +57,23 @@ class PSO:
         # Inicializacion de la velocidad de la poblacion
         self._generar_velocidad()
         # Inicilizacion del fitness
+        self._function_objective()
         # ! Calculo de fitness por funcion numero 5
-        if self.function == "power":
-            self._function_power_different()
+        # if self.function == "power":
+        #     self._function_power_different()
         # ! Calculo de fitness por funcion numero 1
-        if self.function == "sphere":
-            self._function_sphere_()
+        # if self.function == "sphere":
+        #     self._function_sphere_()
+
+        
         # Inicilizacion del gBest
         self._calculo_gbest_()
 
-        self.convergence = []
-        
-    #genera valores aleatorios
+    def __del__(self):
+        print("Destruyendo PSO")
+        self._data_fitness.clear()
+     
+    #* Genera valores aleatorios (NO MOVER)
     def _generar_individuo(self):
         # Crear un arreglo
         _list = []
@@ -79,7 +84,7 @@ class PSO:
         # Regresa el arreglo como objeto numpy
         return np.array(_list)
     
-    #genera una poblacion y la almacena en una matriz
+    #* Genera una poblacion y la almacena en una matriz (NO MOVER)
     def _generar_poblacion(self):
         # Generacion  de la poblacion
         for i in range(self.NUMERO_POBLACION):
@@ -91,7 +96,7 @@ class PSO:
         for i in range(self.NUMERO_POBLACION):
             self._pbest[i] = self._poblacion[i]
     
-    # Generar velocidades
+    #* Generar velocidades (NO MOVER)
     def _generar_velocidad(self):
         # Solo dos valores
         for i in range(self.NUMERO_POBLACION):
@@ -104,20 +109,23 @@ class PSO:
 
             self._velocidad[i] = _velocidad
 
-    # Actualizcion de pBest
+    #* Actualizcion de pBest (NO MOVER)
     def _actualizar_pbest_(self): 
         for i in range(self.NUMERO_POBLACION):
             if self._fitness[i] < self._pbest_fitness[i]:
                 self._pbest[i] = self._poblacion[i]
                 self._pbest_fitness[i] = self._fitness[i]
 
+    #* Calculo de gBest (NO MOVER)
     def _calculo_gbest_(self): 
         # Obtener el valor minimo
         index = np.argmin(self._pbest_fitness)
+        index_violaciones = np.argmin(self._violaciones_individuo)
         self._gbest_f = self._pbest_fitness[index] 
         self._gbest_c = self._poblacion[index]
+        self._gbest_v = self._violaciones_individuo[index_violaciones]
 
-    # Calculo de fitness
+    #* Calculo de fitness (NO MOVER)
     def _calculo_fitness(self):
         # (x1 ** 3 + x2 ** 3) / 100
         for i in range(self.NUMERO_POBLACION):
@@ -131,7 +139,8 @@ class PSO:
             self._fitness[i] = fitness
 
             self._pbest_fitness[i] = fitness
-            
+    
+    #* Calculo de Z (NO MOVER)
     def calcular_z(self, x):
         # Creo arreglo de z
         z = np.zeros((self.NUMERO_DE_DIMENSIONES))
@@ -140,16 +149,20 @@ class PSO:
         # Inicio iteración mediante la Dimensión
         for i in range(self.NUMERO_DE_DIMENSIONES):
             # Validación de los límites
-            if self.restriccion == "ref" or self.restriccion == "bounce":
-                # ! Restriccion reflex
-                z[i] = self._restriccion_reflex_(x[i] - o[i])
-            elif self.restriccion == "rand":
-                # ! Restriccion random
-                z[i] = self._restriccion_random_(x[i] - o[i])
+            if self.limite == "ref":
+                # ! Limite reflex
+                z[i] = self._limite_reflex_(x[i] - o[i])
+            elif self.limite == "rand":
+                # ! Limite random
+                z[i] = self._limite_random_(x[i] - o[i])
+            else:
+                # ! Limite boundary
+                z[i] = self._limite_boudary_(x[i] - o[i])
                 
         # Devuelvo arreglo z
         return z
 
+    #* Funcion Power Different (NO MOVER)
     def _function_power_different(self):
         for i in range(self.NUMERO_POBLACION):
             # Se extrae el individuo
@@ -164,26 +177,26 @@ class PSO:
                 suma += e
             
             fitness = math.sqrt(suma) - self.F5
-        
+                    
             self._fitness[i] = fitness 
         
             self._pbest_fitness[i] = fitness 
-            
+    
+    #* Funcion Sphere (NO MOVER)
     def _function_sphere_(self):
         for i in range(self.NUMERO_POBLACION):
             _individuo = self._poblacion[i]
             z = self.calcular_z(_individuo)
-            for j in range(self.NUMERO_DE_DIMENSIONES):
-                _z = z[j]
-                suma_cuadrados = np.sum(_z**2)
+            suma_cuadrados = np.sum(z**2)
             
-            self._fitness[i] = suma_cuadrados + self.F1
+            fitness = suma_cuadrados + self.F1
             
-            self._pbest_fitness[i] = suma_cuadrados + self.F1
-        
+            
+            self._fitness[i] = fitness
+            
+            self._pbest_fitness[i] = fitness
     
-
-    # Actualizacion de velocidad            
+    #* Actualizacion de velocidad (NO MOVER)            
     def _actualizar_velocidad(self):
         for i in range(self.NUMERO_POBLACION):
             for j in range(len(self._velocidad[i])):
@@ -191,56 +204,61 @@ class PSO:
                 r2 = random.random()
                 v2 = self.W * self._velocidad[i][j] + self.C1 * r1 * (self._pbest[i][j] - self._velocidad[i][j]) + self.C2 * r2 * (self._gbest_c[j] - self._velocidad[i][j])
                 
-                if self.restriccion == "ref":
-                    # ! Restriccion reflex
-                    self._velocidad[i][j] = self._restriccion_reflex_(v2)
-                elif self.restriccion == "rand":
-                    # ! Restriccion random
-                    self._velocidad[i][j] = self._restriccion_random_(v2)
-                elif self.restriccion == "bounce":
-                    # ! Restriccion bouncy
-                    self._velocidad[i][j] = self._restriccion_bouncy(v2)
-                
-
-    #Actualización de la población
+                if self.limite == "ref":
+                    # ! Limite reflex
+                    self._velocidad[i][j] = self._limite_reflex_(v2)
+                elif self.limite == "rand":
+                    # ! Limite random
+                    self._velocidad[i][j] = self._limite_random_(v2)
+                elif self.limite == "bounce":
+                    # ! Limite bounary
+                    self._velocidad[i][j] = self._limite_boudary_(v2)
+    
+    # * Actualizacion de gbest
+    def _actualizar_gbest(self):
+        self._calculo_gbest_()
+                          
+    #* Actualización de la población (NO MOVER)
     def _actualizar_poblacion(self):
         for i in range (self.NUMERO_POBLACION):
             for j in range(len(self._velocidad[i])):
                 self._poblacion[i][j] = self._poblacion[i][j] + self._velocidad[i][j] 
 
-                if self.restriccion == "ref":
-                    # ! Restriccion reflex
-                    self._poblacion[i][j] = self._restriccion_reflex_(self._poblacion[i][j]) 
-                elif self.restriccion == "rand":
-                    # ! Restriccion random
-                    self._poblacion[i][j] = self._restriccion_random_(self._poblacion[i][j])
-                elif self.restriccion == "bounce":
-                    #! Restriccion bouncy
-                    self._poblacion[i][j] = self._restriccion_bouncy(self._poblacion[i][j])
-                    
-    #Calcular el nuevo fitness
-    def _actualizar_fitness(self):
-        # ! Calculo de fitness por funcion numero 5
-        if self.function == "power":
-            self._function_power_different()
-        # ! Calculo de fitness por funcion numero 1
-        if self.function == "sphere":
-            self._function_sphere_()
+                if self.limite == "ref":
+                    # ! Limite reflex
+                    self._poblacion[i][j] = self._limite_reflex_(self._poblacion[i][j]) 
+                elif self.limite == "rand":
+                    # ! Limite random
+                    self._poblacion[i][j] = self._limite_random_(self._poblacion[i][j])
+                elif self.limite == "bounce":
+                    #! Limite bouncy
+                    self._poblacion[i][j] = self._limite_boudary_(self._poblacion[i][j])
         
-        for i in range (self.NUMERO_POBLACION):
-                if (self._fitness[i] <= self._pbest_fitness[i]):
-                    self._pbest_fitness[i] = self._fitness[i]
-                    self._pbest[i] = self._poblacion[i]
-                    
-    def _actualizar_gbest(self):
-        self._calculo_gbest_()
+    
+    #* Calcular el nuevo fitness
+    # TODO: Sistema de evaluacion de factibilidad por reglas de DEB
+    def _actualizar_fitness(self):
+        # # ! Calculo de fitness por funcion numero 5
+        # if self.function == "power":
+        #     self._function_power_different()
+        # # ! Calculo de fitness por funcion numero 1
+        # if self.function == "sphere":
+        #     self._function_sphere_()
+        # ! Calculo de fitness por funcion objectiva
+        self._function_objective()
+            
+        for i in range (self.NUMERO_POBLACION):            
+            if (self._fitness[i] <= self._pbest_fitness[i]):
+                self._pbest_fitness[i] = self._fitness[i]
+                self._pbest[i] = self._poblacion[i]
+        
+    
+    
 
     def start(self):
-        # print("Restriccion", self.restriccion)
-        # print("Function", self.function)
+        
         generacion = 0
         while generacion < self.NUMERO_GENERACION:
-            # random.seed(generacion)
             self._actualizar_velocidad()
 
             self._actualizar_poblacion()
@@ -251,138 +269,81 @@ class PSO:
 
             generacion += 1
 
-        # Después de completar una ejecución completa del algoritmo,
-        # guardar los datos de fitness y luego restablecer todo para la próxima ejecución.
-        print(len(self._data_fitness))
         self._data_fitness.append(self._gbest_f)
-        print("Mejor Individuo", self._gbest_f)
-        self.reset()  # Restablecer la población, velocidades, etc.
+        self._data_violacion.append(self._gbest_v)
+        
+    # ! Manejo de Limites
     
-    def _restriccion_random_(self , eval):
+    def _limite_random_(self , eval):
         if eval > self.MAX or eval < self.MIN:
                     eval = self.MIN + random.uniform(0, 1) * (self.MAX - self.MIN)
         return eval
     
-    
-    def _restriccion_reflex_(self, eval, lower_limit=-20, upper_limit=20):
+    def _limite_reflex_(self, eval, lower_limit=-20, upper_limit=20):
         if eval < lower_limit:
             eval = lower_limit + abs(eval - lower_limit)
         elif eval > upper_limit:
             eval = upper_limit - abs(eval - upper_limit)
         return eval
 
-    def _restriccion_bouncy(self, eval):
-        return np.clip(eval, self.MAX, self.MIN)
+    def _limite_boudary_(self, eval):
+        if self.MIN <= eval <= self.MAX:
+            return eval
+        elif self.MIN <= eval:
+            return self.MIN
+        else:
+            return self.MAX
+    
+    # ! Manejo de Restricciones
+    
+    def _function_objective(self):
+        for i in range(self.NUMERO_POBLACION):
+            _individuo = self._poblacion[i]
+            sum_cos4 = np.sum(np.cos(_individuo)**4)
+            prod_cos2 = np.prod(np.cos(_individuo)**2)
+            sum_ix2 = np.sum([(i + 1) * _individuo[i]**2 for i in range(len(_individuo))])
+ 
+                      
+            f_x = -abs((sum_cos4 - 2 * prod_cos2) / np.sqrt(sum_ix2))
+            
+            self.calcular_violaciones(_individuo)
+
+            self._violaciones = 0
+
+            self._fitness[i] = f_x
+            
+            self._pbest_fitness[i] = f_x
+
+
         
-    #imprime el arreglo
-    def __str__(self) -> str: 
-        return f"""GBEST FITNESS \n {self._gbest_f}\n INDIVIDUO \n{self._gbest_c}"""
+    def g1 (self, x):
+        return 0.75 - np.prod(x) <= 0
+    
+    def g2(self , x):
+        return np.sum(x) -7.5 * self.NUMERO_DE_DIMENSIONES <= 0
 
+    def calcular_violaciones (self , x):
+        if self.g1(x): 
+            self._violaciones += 1
+        if self.g2(x): 
+            self._violaciones += 1
+        self._violaciones_individuo.append(self._violaciones)
 
-    # def plot_convergence(self):
-    #     # Crear una lista de generaciones
-    #     generaciones = np.arange(1, self.NUMERO_GENERACION + 1)
+            
 
-    #     # Crear el gráfico
-    #     plt.plot(generaciones, self.convergence, marker='o', linestyle='-')
-    #     plt.title('Convergencia de PSO')
-    #     plt.xlabel('Generación')
-    #     plt.ylabel('Mejor Fitness')
-    #     plt.grid(True)
-    #     plt.show()
-
-
+    # ! Reinicio
     def reset(self):
-        # Restablecer la población, velocidad, fitness, etc.
-        self._poblacion = np.zeros((self.NUMERO_POBLACION, self.NUMERO_DE_DIMENSIONES)) 
+        
+            
+        self._poblacion = np.zeros((self.NUMERO_POBLACION, self.NUMERO_DE_DIMENSIONES))
         self._velocidad = np.zeros((self.NUMERO_POBLACION, self.NUMERO_DE_DIMENSIONES))
         self._fitness = np.zeros(self.NUMERO_POBLACION)
         self._pbest = np.zeros((self.NUMERO_POBLACION, self.NUMERO_DE_DIMENSIONES))
         self._pbest_fitness = np.zeros(self.NUMERO_POBLACION)
         self._gbest_c = np.zeros(self.NUMERO_DE_DIMENSIONES)
-        self._gbest_f = 0        
-
+        self._gbest_f = 0
         self._generar_poblacion()
-        
         self._generar_velocidad()
-        
-        # ! Calculo de fitness por funcion numero 5
-        if self.function == "power":
-            self._function_power_different()
-        # ! Calculo de fitness por funcion numero 1
-        if self.function == "sphere":
-            self._function_sphere_()
-        
         self._calculo_gbest_()
-        
-        
-if __name__ == "__main__":
-    # Inicializamos las listas para almacenar los datos de fitness de cada experimento
-    data_fitness_exp1 = []
-    data_fitness_exp2 = []
-    data_fitness_exp3 = []
-    data_fitness_exp4 = []
-    data_fitness_exp5 = []
-    data_fitness_exp6 = []
-    
-    print("REF & POWER")
-    for _ in range(25):
-        exp1 = PSO(restriccion="ref", function="power")
-        exp1.start()
-        data_fitness_exp1.extend(exp1._data_fitness)  # Usamos extend en lugar de append
-    
-    print("RAND & POWER")
-    for _ in range(25):
-        exp2 = PSO(restriccion="rand", function="power")
-        exp2.start()
-        data_fitness_exp2.extend(exp2._data_fitness)  # Usamos extend en lugar de append
-    
-    print("BOUNCE & POWER")  
-    for _ in range(25):
-        exp3 = PSO(restriccion="bounce", function="power")
-        exp3.start()
-        data_fitness_exp3.extend(exp3._data_fitness)  # Usamos extend en lugar de append
-    
-    print("REF & SPHERE")
-    for _ in range(25):
-        exp4 = PSO(restriccion="ref", function="sphere")
-        exp4.start()
-        data_fitness_exp4.extend(exp4._data_fitness)  # Usamos extend en lugar de append
-    
-    print("RAND & SPHERE")
-    for _ in range(25):
-        exp5 = PSO(restriccion="rand", function="sphere")
-        exp5.start()
-        data_fitness_exp5.extend(exp5._data_fitness)  # Usamos extend en lugar de append
-    
-    print("BOUNCE & SPHERE")
-    for _ in range(25):
-        exp6 = PSO(restriccion="bounce", function="sphere")
-        exp6.start()
-        data_fitness_exp6.extend(exp6._data_fitness)  # Usamos extend en lugar de append
-
-
-    
-    # Crear 2 filas y 3 columnas de subplots
-    fig, axes = plt.subplots(2, 3, figsize=(18, 12))
-    
-    axes[0, 0].boxplot(data_fitness_exp1, labels=['exp1'])
-    axes[0, 0].set_title('Reflaction, Power')
-    
-    axes[0, 1].boxplot(data_fitness_exp2, labels=['exp2'])
-    axes[0, 1].set_title('Random, Power')
-    
-    axes[0, 2].boxplot(data_fitness_exp3, labels=['exp3'])
-    axes[0, 2].set_title('Bounce, Power')
-    
-    axes[1, 0].boxplot(data_fitness_exp4, labels=['exp4'])
-    axes[1, 0].set_title('Reflaction, Sphere')
-    
-    axes[1, 1].boxplot(data_fitness_exp5, labels=['exp5'])
-    axes[1, 1].set_title('Random, Sphere')
-    
-    axes[1, 2].boxplot(data_fitness_exp6, labels=['exp6'])
-    axes[1, 2].set_title('Bounce, Sphere')
-
-    plt.tight_layout()
-    plt.show()
+        self._violaciones = 0
+        self._factibles = []
