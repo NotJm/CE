@@ -1,349 +1,223 @@
+from utils.individuo import (generar, isValid, NP, GENERACIONES)
+from utils.limites import (boundary, reflex, random)
+from utils.velocidad import (dba, rba)
+from utils.restricciones import (g01, g02, evaluar)
 import numpy as np
-import random
-import math
-#             /$$$$$$                               
-#            /$$__  $$                              
-#   /$$$$$$ | $$  \__/  /$$$$$$   /$$$$$$  /$$$$$$$ 
-#  /$$__  $$| $$$$     /$$__  $$ /$$__  $$| $$__  $$
-# | $$$$$$$$| $$_/    | $$  \__/| $$$$$$$$| $$  \ $$
-# | $$_____/| $$      | $$      | $$_____/| $$  | $$
-# |  $$$$$$$| $$      | $$      |  $$$$$$$| $$  | $$
-#  \_______/|__/      |__/       \_______/|__/  |__/
+import random as rd
+import time as tm
 class PSO:
-    NUMERO_POBLACION = 100
-    NUMERO_GENERACION = 1000
-    NUMERO_DE_DIMENSIONES = 20
-    
-    #numero de individios en la poblacion
-    # 10 son las filas y 2 son las columnas
-    _poblacion = np.zeros((NUMERO_POBLACION, NUMERO_DE_DIMENSIONES))
-    _velocidad = np.zeros((NUMERO_POBLACION, NUMERO_DE_DIMENSIONES))
-    _fitness   = np.zeros(NUMERO_POBLACION)
 
-    _gbest_c = np.zeros(NUMERO_DE_DIMENSIONES)  #gbest cordenadas(posicion)
-    _gbest_f = 0  #gbest fitness
-    _gbest_v = 0
-
-    _pbest = np.zeros((NUMERO_POBLACION, NUMERO_DE_DIMENSIONES))
-    _pbest_fitness = np.zeros(NUMERO_POBLACION)
+    superior = [
+        10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+        10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+    ]
+    inferior = [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ]
     
-    _data_fitness = []
-    _data_violacion = []
+    fitness = pbestFitness = np.zeros(NP)
+        
+    noViolaciones = np.zeros(NP)
     
-    _violaciones = 0
-    _factibles = []
-    _violaciones_individuo = []
-    _ultimo_factible = False
-    
-
-    MAX = 10
-    MIN = 0
-
+    gbestAptitud:float = 0
+    gbestViolacion:float = 0
+    gbestIndVio:float = 0
+    gbestIndviduo = []
+    gbestVelocidad = []
+        
     W = 0.95
     C1 = 1.4944
     C2 = 1.4944
-    F5 = -1000
-    F1 = -1400
-
-    # Constructor
-    def __init__(self, limite: str):
-        # Inicializar restriccion
+    
+    def __init__(self, limite:str):
         self.limite = limite
-        # self.function = function
-        # Inicializacion de los individuos
-        self._generar_individuo()
-        # Inicializacion de la poblacion
-        self._generar_poblacion()
-        # Inicializacion de la velocidad de la poblacion
-        self._generar_velocidad()
-        # Inicilizacion del fitness
-        self._function_objective()
-        # ! Calculo de fitness por funcion numero 5
-        # if self.function == "power":
-        #     self._function_power_different()
-        # ! Calculo de fitness por funcion numero 1
-        # if self.function == "sphere":
-        #     self._function_sphere_()
+        # Solo para la generacion para 0
+        # Inicializacion de particulas (poblacion) con vectores de posicion y velocidad
+        self.poblacion = generar(self.inferior, self.superior)
+        self.velocidad = generar(self.inferior, self.superior)
+        # Calculo de la aptitud (fitness) para cada particula (individuo)
+        self.calularAptitud()
+        # El primer pbest es inicial
+        self.pbest = np.copy(self.poblacion)
+        # Obtener el mejor de la generacion 0
+        self.calculoGbest()
+    
+    # Calculo de la aptitud (fitness) para cada particula (individuo)
+    def calularAptitud(self):
+        for x in range(NP):
+            evaluacion = evaluar(self.poblacion[x], g02)
+            self.fitness[x] = evaluacion["fitness"]
+            self.pbestFitness[x] = evaluacion["fitness"]
+            self.noViolaciones[x] = evaluacion["noViolaciones"]
+    
+    
+    def evaluacionPbest(self):
+        for i in range(len(self.pbest)):
+            # Aptitud actual del individuo
+            currentFitness = self.fitness[i]
+            # Violaciones actuales del individuo
+            currentViolaciones = self.noViolaciones[i]
+            # Mejor aptitud personal hasta ahora
+            pbestFitness = self.pbestFitness[i]
+            # Mejor número de violaciones personal hasta ahora
+            pbestViolaciones = self.noViolaciones[i]
 
+            if currentViolaciones == 0 and pbestViolaciones == 0:  # Ambas soluciones son factibles
+                if currentFitness < pbestFitness:  # Si la aptitud actual es mejor que el pbest
+                    # Actualiza la mejor posición personal
+                    self.pbest[i] = self.poblacion[i]
+                    # Actualiza la mejor aptitud personal
+                    self.pbestFitness[i] = currentFitness
+                    # Actualiza el número de violaciones personal
+                    self.noViolaciones[i] = currentViolaciones
+            elif currentViolaciones == 0 and pbestViolaciones > 0:  # La actual es factible, el pbest no
+                # Actualiza la mejor posición personal
+                self.pbest[i] = self.poblacion[i]
+                # Actualiza la mejor aptitud personal
+                self.pbestFitness[i] = currentFitness
+                # Actualiza el número de violaciones personal
+                self.noViolaciones[i] = currentViolaciones
+            elif currentViolaciones > 0 and pbestViolaciones == 0:  # El pbest es factible, la actual no
+                continue  # No actualizar el pbest
+            else:  # Ambas soluciones no son factibles
+                if currentViolaciones < pbestViolaciones:  # Si la actual tiene menos violaciones
+                    # Actualiza la mejor posición personal
+                    self.pbest[i] = self.poblacion[i]
+                    # Actualiza la mejor aptitud personal
+                    self.pbestFitness[i] = currentFitness
+                    # Actualiza el número de violaciones personal
+                    self.noViolaciones[i] = currentViolaciones
+                elif currentViolaciones == pbestViolaciones and currentFitness < pbestFitness:  # Si tienen el mismo número de violaciones pero mejor aptitud
+                    # Actualiza la mejor posición personal
+                    self.pbest[i] = self.poblacion[i]
+                    # Actualiza la mejor aptitud personal
+                    self.pbestFitness[i] = currentFitness
+                    # Actualiza el número de violaciones personal
+                    self.noViolaciones[i] = currentViolaciones
+
+
+
+    def calculoGbest(self):
+        gbestIndex = 0  # Índice del mejor global
+        gbestM = self.pbestFitness[0]
+        gbestV = self.noViolaciones[0]
+
+        # Itera a través de todos los valores de aptitud (fitness) personales (pbest)
+        for i in range(1, len(self.pbestFitness)):
+            currentM = self.pbestFitness[i]
+            currentV = self.noViolaciones[i]
+
+            if gbestV == 0 and currentV == 0:  # Ambas soluciones son factibles
+                if currentM < gbestM: 
+                    gbestM = currentM  
+                    gbestIndex = i  
+            elif gbestV == 0 and currentV > 0:  # La mejor global es factible, la actual no
+                continue  # Continúa con la siguiente iteración
+            elif gbestV > 0 and currentV == 0:  # La mejor global no es factible, la actual sí
+                gbestM = currentM  
+                gbestV = currentV  
+                gbestIndex = i  
+            else:  # Ambas soluciones no son factibles
+                if currentV < gbestV:  
+                    gbestM = currentM  
+                    gbestV = currentV  
+                    gbestIndex = i  
+                elif currentV == gbestV and currentM < gbestM:  # Si tienen el mismo número de violaciones pero mejor aptitud
+                    gbestM = currentM  
+                    gbestIndex = i  
+
+        self.gbestIndviduo = self.pbest[gbestIndex]  # Actualiza el mejor individuo global
+        self.gbestAptitud = gbestM  # Actualiza la mejor aptitud global
+        self.gbestViolaciones = gbestV  # Actualiza el número de violaciones del mejor global
+        self.gbestIndVio = self.noViolaciones[gbestIndex] # Actualiza el número de
+        self.gbestVelocidad = self.velocidad[gbestIndex] # Actualiza el número de
+
+                
+    def actualizarVelocidad(self):
+        for index in range(NP):
+            rba(self.velocidad[index])      
+            for jndex in range(len(self.velocidad[index])):
+                r1 = rd.uniform(0, 1)
+                r2 = rd.uniform(0, 1)
+                actVelocidad = (self.W * self.velocidad[index][jndex] + 
+                                self.C1 * r1 * (self.pbest[index][jndex] - self.velocidad[index][jndex]) + 
+                                    self.C2 * r2 * (self.gbestIndviduo[jndex] - self.velocidad[index][jndex]))
+                self.velocidad[index][jndex] = actVelocidad
+            
+    def actualizarGbest(self):
+        self.calculoGbest()
         
-        # Inicilizacion del gBest
-        self._calculo_gbest_()
-
-    def __del__(self):
-        print("Destruyendo PSO")
-        self._data_fitness.clear()
-     
-    #* Genera valores aleatorios (NO MOVER)
-    def _generar_individuo(self):
-        # Crear un arreglo
-        _list = []
-        # Solo dos valores
-        for _ in range(self.NUMERO_DE_DIMENSIONES):
-            # Generar valores aleatorios flotantes dentro del rango -20 a 20
-            _list.append(random.uniform(self.MAX, self.MIN))
-        # Regresa el arreglo como objeto numpy
-        return np.array(_list)
-    
-    #* Genera una poblacion y la almacena en una matriz (NO MOVER)
-    def _generar_poblacion(self):
-        # Generacion  de la poblacion
-        for i in range(self.NUMERO_POBLACION):
-            # Se obtiene el individuo
-            _individuo = self._generar_individuo()
-            # Se añade a la poblacion
-            self._poblacion[i] = _individuo
-
-        for i in range(self.NUMERO_POBLACION):
-            self._pbest[i] = self._poblacion[i]
-    
-    #* Generar velocidades (NO MOVER)
-    def _generar_velocidad(self):
-        # Solo dos valores
-        for i in range(self.NUMERO_POBLACION):
-            # Generar valores aleatorios flotantes dentro del rango -20 a 20
-            _velocidad = self._velocidad[i]
-            # Generar numeros aleatorios para la velocidad
-            for j in range(len(_velocidad)):
-                # Generar numeros aleatorios
-                _velocidad[j] = random.uniform(-20, 20)
-
-            self._velocidad[i] = _velocidad
-
-    #* Actualizcion de pBest (NO MOVER)
-    def _actualizar_pbest_(self): 
-        for i in range(self.NUMERO_POBLACION):
-            if self._fitness[i] < self._pbest_fitness[i]:
-                self._pbest[i] = self._poblacion[i]
-                self._pbest_fitness[i] = self._fitness[i]
-
-    #* Calculo de gBest (NO MOVER)
-    def _calculo_gbest_(self): 
-        # Obtener el valor minimo
-        index = np.argmin(self._pbest_fitness)
-        index_violaciones = np.argmin(self._violaciones_individuo)
-        self._gbest_f = self._pbest_fitness[index] 
-        self._gbest_c = self._poblacion[index]
-        self._gbest_v = self._violaciones_individuo[index_violaciones]
-
-    #* Calculo de fitness (NO MOVER)
-    def _calculo_fitness(self):
-        # (x1 ** 3 + x2 ** 3) / 100
-        for i in range(self.NUMERO_POBLACION):
-            # Extraigo el individuo de la poblacin
-            _individuo = self._poblacion[i]
-            # xObtengo el x1 y el x2 del individuo
-            x1, x2 = _individuo
-            # Calculo del fitness
-            fitness = (x1 ** 3 + x2 ** 3) / 100
-            # Guardo el fitness
-            self._fitness[i] = fitness
-
-            self._pbest_fitness[i] = fitness
-    
-    #* Calculo de Z (NO MOVER)
-    def calcular_z(self, x):
-        # Creo arreglo de z
-        z = np.zeros((self.NUMERO_DE_DIMENSIONES))
-        # Generar O
-        o = self._generar_individuo()
-        # Inicio iteración mediante la Dimensión
-        for i in range(self.NUMERO_DE_DIMENSIONES):
-            # Validación de los límites
-            if self.limite == "ref":
+    def actualizarPoblacion(self):
+        for index in range(NP):
+            for jndex in range(len(self.velocidad[index])):
+                self.poblacion[index][jndex] = self.poblacion[index][jndex] + self.velocidad[index][jndex]
+            
+                
+            if self.limite == "reflex":
                 # ! Limite reflex
-                z[i] = self._limite_reflex_(x[i] - o[i])
-            elif self.limite == "rand":
+                self.poblacion[index] = reflex(self.superior, self.inferior, self.poblacion[index])
+            elif self.limite == "random":
                 # ! Limite random
-                z[i] = self._limite_random_(x[i] - o[i])
-            else:
-                # ! Limite boundary
-                z[i] = self._limite_boudary_(x[i] - o[i])
-                
-        # Devuelvo arreglo z
-        return z
-
-    #* Funcion Power Different (NO MOVER)
-    def _function_power_different(self):
-        for i in range(self.NUMERO_POBLACION):
-            # Se extrae el individuo
-            _individuo = self._poblacion[i]
-            # Variable sumadora
-            suma = 0
-            # Calcular Z
-            z = self.calcular_z(_individuo)
-            for j in range(self.NUMERO_DE_DIMENSIONES):
-                _z = z[j]
-                e = abs(_z) ** (2 + 4 * (j / (self.NUMERO_DE_DIMENSIONES - 1)))
-                suma += e
+                self.poblacion[index] = random(self.superior, self.inferior, self.poblacion[index])
+            elif self.limite == "boundary":
+                #! Limite bouncy
+                self.poblacion[index] = boundary(self.superior, self.inferior, self.poblacion[index])
             
-            fitness = math.sqrt(suma) - self.F5
-                    
-            self._fitness[i] = fitness 
+    def actualizarAptitud(self):
+        self.calularAptitud()
         
-            self._pbest_fitness[i] = fitness 
-    
-    #* Funcion Sphere (NO MOVER)
-    def _function_sphere_(self):
-        for i in range(self.NUMERO_POBLACION):
-            _individuo = self._poblacion[i]
-            z = self.calcular_z(_individuo)
-            suma_cuadrados = np.sum(z**2)
-            
-            fitness = suma_cuadrados + self.F1
-            
-            
-            self._fitness[i] = fitness
-            
-            self._pbest_fitness[i] = fitness
-    
-    #* Actualizacion de velocidad (NO MOVER)            
-    def _actualizar_velocidad(self):
-        for i in range(self.NUMERO_POBLACION):
-            for j in range(len(self._velocidad[i])):
-                r1 = random.random()
-                r2 = random.random()
-                v2 = self.W * self._velocidad[i][j] + self.C1 * r1 * (self._pbest[i][j] - self._velocidad[i][j]) + self.C2 * r2 * (self._gbest_c[j] - self._velocidad[i][j])
-                
-                if self.limite == "ref":
-                    # ! Limite reflex
-                    self._velocidad[i][j] = self._limite_reflex_(v2)
-                elif self.limite == "rand":
-                    # ! Limite random
-                    self._velocidad[i][j] = self._limite_random_(v2)
-                elif self.limite == "bounce":
-                    # ! Limite bounary
-                    self._velocidad[i][j] = self._limite_boudary_(v2)
-    
-    # * Actualizacion de gbest
-    def _actualizar_gbest(self):
-        self._calculo_gbest_()
-                          
-    #* Actualización de la población (NO MOVER)
-    def _actualizar_poblacion(self):
-        for i in range (self.NUMERO_POBLACION):
-            for j in range(len(self._velocidad[i])):
-                self._poblacion[i][j] = self._poblacion[i][j] + self._velocidad[i][j] 
-
-                if self.limite == "ref":
-                    # ! Limite reflex
-                    self._poblacion[i][j] = self._limite_reflex_(self._poblacion[i][j]) 
-                elif self.limite == "rand":
-                    # ! Limite random
-                    self._poblacion[i][j] = self._limite_random_(self._poblacion[i][j])
-                elif self.limite == "bounce":
-                    #! Limite bouncy
-                    self._poblacion[i][j] = self._limite_boudary_(self._poblacion[i][j])
+        self.evaluacionPbest()
         
+    def report_actulizacion(self):
+        pass
     
-    #* Calcular el nuevo fitness
-    # TODO: Sistema de evaluacion de factibilidad por reglas de DEB
-    def _actualizar_fitness(self):
-        # # ! Calculo de fitness por funcion numero 5
-        # if self.function == "power":
-        #     self._function_power_different()
-        # # ! Calculo de fitness por funcion numero 1
-        # if self.function == "sphere":
-        #     self._function_sphere_()
-        # ! Calculo de fitness por funcion objectiva
-        self._function_objective()
-            
-        for i in range (self.NUMERO_POBLACION):            
-            if (self._fitness[i] <= self._pbest_fitness[i]):
-                self._pbest_fitness[i] = self._fitness[i]
-                self._pbest[i] = self._poblacion[i]
+    def report(self, generacion:int = 0):
+        print("PSO Reporte")
+        # for ind, apt, vio in zip(self.poblacion, self.fitness, self.noViolaciones):
+        #     print("Individuo:", ind)
+        #     print("Aptitud (Fitness):", apt)
+        #     print("No Violaciones:", vio)
+        #     print("Valido:", isValid(self.superior, self.inferior, ind))
+        # print("\n")
+        print("Mejor Individuo:", self.gbestIndviduo)
+        print("Mejor Aptitud(Fitness):", self.gbestAptitud)
+        print("Mejor Velocidad:", self.gbestVelocidad)
+        print("No Violaciones:", "Sin Violaciones" if self.gbestIndVio == 0 else self.gbestIndVio)
+        print("Valido:", isValid(self.superior, self.inferior, self.gbestIndviduo))
+        print("\n")
         
-    
-    
-
     def start(self):
-        
-        generacion = 0
-        while generacion < self.NUMERO_GENERACION:
-            self._actualizar_velocidad()
-
-            self._actualizar_poblacion()
-
-            self._actualizar_fitness()
-
-            self._actualizar_gbest()
-
+        generacion = 1
+        while generacion < GENERACIONES:
+            self.actualizarVelocidad()
+            self.actualizarPoblacion()
+            self.actualizarAptitud()
+            self.actualizarGbest()
+            
+            poblacion_list = self.poblacion.tolist()
+            random_individuos = rd.sample(poblacion_list, k=5)
+            for i, individuo in enumerate(random_individuos):
+                if self.noViolaciones[i] > 0:
+                    ...
+                    # print(f"Generación {generacion}:")
+                    # print("********************************")
+                    # print(f"Individuo {i+1}: {individuo}")
+                    # print("Aptitud(Fitness):", self.fitness[i])
+                    # print("NoViolacion:", self.noViolaciones[i])
+                    # print("Valido:", isValid(self.superior, self.inferior, individuo))
+                    # print("********************************")                  
             generacion += 1
 
-        self._data_fitness.append(self._gbest_f)
-        self._data_violacion.append(self._gbest_v)
-        
-    # ! Manejo de Limites
-    
-    def _limite_random_(self , eval):
-        if eval > self.MAX or eval < self.MIN:
-                    eval = self.MIN + random.uniform(0, 1) * (self.MAX - self.MIN)
-        return eval
-    
-    def _limite_reflex_(self, eval, lower_limit=-20, upper_limit=20):
-        if eval < lower_limit:
-            eval = lower_limit + abs(eval - lower_limit)
-        elif eval > upper_limit:
-            eval = upper_limit - abs(eval - upper_limit)
-        return eval
-
-    def _limite_boudary_(self, eval):
-        if self.MIN <= eval <= self.MAX:
-            return eval
-        elif self.MIN <= eval:
-            return self.MIN
-        else:
-            return self.MAX
-    
-    # ! Manejo de Restricciones
-    
-    def _function_objective(self):
-        for i in range(self.NUMERO_POBLACION):
-            _individuo = self._poblacion[i]
-            sum_cos4 = np.sum(np.cos(_individuo)**4)
-            prod_cos2 = np.prod(np.cos(_individuo)**2)
-            sum_ix2 = np.sum([(i + 1) * _individuo[i]**2 for i in range(len(_individuo))])
- 
-                      
-            f_x = -abs((sum_cos4 - 2 * prod_cos2) / np.sqrt(sum_ix2))
-            
-            self.calcular_violaciones(_individuo)
-
-            self._violaciones = 0
-
-            self._fitness[i] = f_x
-            
-            self._pbest_fitness[i] = f_x
-
-
-        
-    def g1 (self, x):
-        return 0.75 - np.prod(x) <= 0
-    
-    def g2(self , x):
-        return np.sum(x) -7.5 * self.NUMERO_DE_DIMENSIONES <= 0
-
-    def calcular_violaciones (self , x):
-        if self.g1(x): 
-            self._violaciones += 1
-        if self.g2(x): 
-            self._violaciones += 1
-        self._violaciones_individuo.append(self._violaciones)
-
-            
-
-    # ! Reinicio
     def reset(self):
-        
+        # Solo para la generacion para 0
+        # Inicializacion de particulas (poblacion) con vectores de posicion y velocidad
+        self.poblacion = generar(self.inferior, self.superior)
+        self.velocidad = generar(self.inferior, self.superior)
+        # Calculo de la aptitud (fitness) para cada particula (individuo)
+        self.calularAptitud()
+        # El primer pbest es inicial
+        self.pbest = np.copy(self.poblacion)
+        # Obtener el mejor de la generacion 0
+        self.calculoGbest()
             
-        self._poblacion = np.zeros((self.NUMERO_POBLACION, self.NUMERO_DE_DIMENSIONES))
-        self._velocidad = np.zeros((self.NUMERO_POBLACION, self.NUMERO_DE_DIMENSIONES))
-        self._fitness = np.zeros(self.NUMERO_POBLACION)
-        self._pbest = np.zeros((self.NUMERO_POBLACION, self.NUMERO_DE_DIMENSIONES))
-        self._pbest_fitness = np.zeros(self.NUMERO_POBLACION)
-        self._gbest_c = np.zeros(self.NUMERO_DE_DIMENSIONES)
-        self._gbest_f = 0
-        self._generar_poblacion()
-        self._generar_velocidad()
-        self._calculo_gbest_()
-        self._violaciones = 0
-        self._factibles = []
