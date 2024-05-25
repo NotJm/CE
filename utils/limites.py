@@ -74,12 +74,4 @@ def random(superior:list, inferior:list, individuo:np.array) -> np.array:
     # CONVIERTE LA LISTA DE VALORES CORREGIDOS A UN ARRAY DE NUMPY Y LO RETORNA
     return np.array(individuo_corregido)
 
-superior = [
-        10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-        10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-    ]
-inferior = [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    ]
 

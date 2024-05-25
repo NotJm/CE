@@ -1,25 +1,18 @@
 from PSO import PSO
 from progress.bar import Bar
-import numpy as np
-import time
-import os
+from utils.limites import (boundary, reflex, random)
+from utils.cec2006problems import (CEC2006_g02)
+from utils.restricciones import (deb)
+
+def main():
+    pso = PSO(
+        reflex,
+        CEC2006_g02.CEC2006_g02_aptitud,
+        deb,
+        [CEC2006_g02.CEC2006_g02_g1, CEC2006_g02.CEC2006_g02_g2]
+    )
+    pso.report()
+
 
 if __name__ == '__main__':
-    pso = PSO("boundary")
-    iterations = 25   
-    ind = [] 
-    apt = []
-    vio = []
-    with Bar('Procesando', max=iterations) as bar:
-        for i in range(iterations):
-            pso.start()
-            ind.append(pso.gbestIndviduo)
-            apt.append(pso.gbestAptitud)
-            vio.append(pso.gbestIndVio)
-            pso.reset()
-            bar.next()
-
-    for i, a, v in zip(ind, apt, vio):
-        print("Individuo:", i)
-        print("Aptitud:", a)
-        print("Violaciones:", v)#
+    main()

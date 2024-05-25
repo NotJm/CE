@@ -1,10 +1,7 @@
 import numpy as np
 import random as rd
+from . import constantes
 
-# NUMERO DE POBLACIONES
-NP = 100
-# NUMERO DE GENERACIONES
-GENERACIONES = 1000
 
 
 #FUNCIÓN GENERAL PARA GENERAR INDIVIDUOS SEGÚN LOS RANGOS SUPERIORES E INFERIORES DADOS
@@ -36,7 +33,7 @@ def generar(inferiores:list, superiores:list) -> np.array:
     poblacion=[]
 
     #GENERA LA POBLACIÓN DE ACUERDO AL NÚMERO DE INDIVIDUOS ESPECIFICADOS
-    for _ in range(NP):
+    for _ in range(constantes.NUMERO_DE_POBLACIONES):
         poblacion.append(generar_individuo(inferiores,superiores))
     return np.array(poblacion)
     

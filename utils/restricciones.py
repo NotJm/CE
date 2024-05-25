@@ -1,55 +1,33 @@
 import numpy as np
 
-# NUMERO DE DIMENSIONES
-DIM = 20
-
-g01 = lambda individuo : [
-            2*individuo[0] + 2*individuo[1] + individuo[9] + individuo[10] - 10 <=0 ,
-            2*individuo[0] + 2*individuo[2] + individuo[9] + individuo[11] - 10 <= 0,
-            2*individuo[1] + 2*individuo[2] + individuo[10] + individuo[11] - 10 <= 0,
-            -8*individuo[0] + individuo[9] <= 0,
-            -8*individuo[1] + individuo[10] <= 0,
-            -8*individuo[2] + individuo[11] <= 0,
-            -2*individuo[3] - individuo[4] + individuo[9] <= 0,
-            -2*individuo[5] - individuo[6] + individuo[10] <= 0,
-            -2*individuo[7] - individuo[8] + individuo[11] <= 0
-        ]
-
-g02 = lambda individuo, DIM : [
-    0.75 - np.prod(individuo) <= 0,
-    np.sum(individuo) - 7.5 * DIM  <= 0
-]
-
-def aptitud(poblacion, funcion_a_evaluar, restriccion) -> np.array:
-        aptitud = []
-        for ind in poblacion:
-            _aptitud = funcion_a_evaluar(ind, restriccion)
-            aptitud.append(_aptitud["fitness"])
-        return np.array(aptitud)
-
-def evaluar(individuo: np.array, restriccion) -> dict:
+def suma_violaciones(g_funcs, h_funcs, x):
+    # Calcular la suma de max(0, g_j(x))^2
+    suma_desigualdad = sum(max(0, g(x))**2 for g in g_funcs)
     
-    # Calculo de la evaluacion
-    sum_cos4 = np.sum(np.cos(individuo)**4)
-    prod_cos2 = np.prod(np.cos(individuo)**2)
-    sum_ix2 = np.sum((np.arange(1, len(individuo) + 1) * individuo**2))
-    f_x = -abs((sum_cos4 - 2 * prod_cos2) / np.sqrt(sum_ix2))
-    # Calculo de restricciones
-    evaluacion_de_restriccion = restriccion(individuo, DIM)
-    # Numero de violaciones
-    violaciones = calcular_violaciones(evaluacion_de_restriccion)
-    # Regresar tupla con el numero de violaciones y la evaluacion del fitness
-    return {
-        "fitness": f_x,
-        "noViolaciones": violaciones,
-    } 
+    # Calcular la suma de |h_k(x)|
+    suma_igualdad = sum(abs(h(x)) for h in h_funcs)
+    
+    # Suma total de violaciones de restricciones
+    suma_violaciones = suma_desigualdad + suma_igualdad
+    
+    return suma_violaciones
 
-def calcular_violaciones(evaluacion:list) -> int:
-    return sum(not r for r in evaluacion)
+def deb(ind1, ind2):
+    # Extraer fitness y número de violaciones de cada individuo
+    fit1, viol1 = ind1[1], ind1[2]
+    fit2, viol2 = ind2[1], ind2[2]
+    
+    # Regla 1: Entre dos soluciones factibles, se elige la de menor valor en la función objetivo.
+    if viol1 == 0 and viol2 == 0:
+        # Verifica si fit1 realmente es menor que fit2
+        return ind1 if fit1 < fit2 else ind2
+    
+    # Regla 2: Entre una solución factible y una infactible, se elige la factible.
+    if viol1 == 0 and viol2 != 0:
+        return ind1
+    if viol1 != 0 and viol2 == 0:
+        return ind2
+    
+    # Regla 3: Entre dos soluciones infactibles, se elige la que tenga menor suma de violaciones.
+    return ind1 if viol1 < viol2 else ind2
 
-# ind =  np.array([5.042501248669893, 4.903689764627512, 5.175878512792987, 6.3567532710437415, 6.338648390703745, 8.633279060085732, 5.98341658374363, 7.903441780999399, 6.905131730783916, 8.914427685999197, 4.326850911813325, 6.744178835543046, 1.5450765973702796, 5.2620806382948615, 6.350606837124625, 3.2951566461112103, 9.168816371841658, 5.619434423271179, 3.7363566031325837, 2.9019936095073016])
-# data_evaluation = evaluar(ind, g02)
-# print(data_evaluation)
-# print(np.prod(ind))
-# print(0.75 - np.prod(ind))
-# print(np.sum(ind) - 7.5 * DIM)

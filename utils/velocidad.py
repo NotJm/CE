@@ -8,3 +8,10 @@ def dba(velocidad: np.array) -> np.array:
 def rba(velocidad: np.array) -> np.array:
     R = rd.uniform(0, 1)
     return np.array([ v * R for v in velocidad])
+
+def aze(velocidad: np.array) -> np.array:
+    return np.array([ v * 0 for v in velocidad])
+
+def adj(new_position: np.array, previous_position: np.array) -> np.array:
+    velocity = new_position - previous_position
+    return velocity
