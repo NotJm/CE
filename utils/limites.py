@@ -33,14 +33,14 @@ def reflex(superior: list, inferior: list, individuo: np.array) -> np.array:
         if ind < inf:
             # REFLEJA EL VALOR AL INTERIOR DEL RANGO
             corregido = inf + (inf - ind)
-            # SI EL VALOR REFLEJADO EXCEDE EL LÍMITE SUPERIOR, AJUSTA AL LÍMITE SUPERIOR
+            # SI EL VALOR REFLEJADO EindividuoCEDE EL LÍMITE SUPERIOR, AJUSTA AL LÍMITE SUPERIOR
             if corregido > sup:
                 corregido = sup
         # SI EL VALOR ES MAYOR AL SUPERIOR,
         elif ind > sup:
             # REFLEJA EL VALOR AL INTERIOR DEL RANGO
             corregido = sup - (ind - sup)
-            # SI EL VALOR REFLEJADO EXCEDE EL LÍMITE INFERIOR, AJUSTA AL LÍMITE INFERIOR
+            # SI EL VALOR REFLEJADO EindividuoCEDE EL LÍMITE INFERIOR, AJUSTA AL LÍMITE INFERIOR
             if corregido < inf:
                 corregido = inf
         else:
@@ -74,4 +74,29 @@ def random(superior:list, inferior:list, individuo:np.array) -> np.array:
     # CONVIERTE LA LISTA DE VALORES CORREGIDOS A UN ARRAY DE NUMPY Y LO RETORNA
     return np.array(individuo_corregido)
 
-
+#METODO EVOLUTIONARY PARA MANEJAR RESTRICCIONES DE LÍMITES DENTRO DE LOS VALORES DE UN INDIVIDUO
+def evolutionary(superior:list, inferior:list, individuo:np.array, bestInd:np.array) -> np.array:
+    
+    if len(individuo) != len(superior) or len(individuo) != len(inferior) or len(individuo) != len(bestInd):
+        raise ValueError("Los arreglos de límites inferiores, superiores, el individuo y el bestIndividuo deben ser iguales en longitud")
+    
+    alpha = rd.random()
+    beta = rd.random()
+    
+    individuo_corregido = []
+    
+    for sup, inf, ind, best in zip(superior, inferior, individuo, bestInd):
+        # Si el componente está dentro de los límites, se mantiene igual
+        if ind >= inf and ind <= sup:
+            individuo_corregido.append(ind)
+        # Si el componente es menor que el límite inferior, se ajusta hacia él
+        elif ind < inf:
+            new_component = alpha * inf + (1 - alpha) * best
+            individuo_corregido.append(new_component)
+        # Si el componente es mayor que el límite superior, se ajusta hacia él
+        else:
+            new_component = beta * sup + (1 - beta) * best
+            individuo_corregido.append(new_component)
+    
+    # CONVIERTE LA LISTA DE VALORES CORREGIDOS A UN ARRAY DE NUMPY Y LO RETORNA
+    return np.array(individuo_corregido)

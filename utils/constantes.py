@@ -1,15 +1,12 @@
-SUPERIOR = [
-        10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-        10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-    ]
-INFERIOR = [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-]
+SUPERIOR = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10 ]
+INFERIOR = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-# TODO: Cambiar a 100 Poblaciones y a 1000 Generaciones
 
-NUMERO_DE_POBLACIONES = 10
+NUMERO_DE_POBLACIONES = 100
 
-GENERACIONES = 10
+GENERACIONES = 1000
+
+CR=0.9
+
+F=0.9
 

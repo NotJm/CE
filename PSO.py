@@ -1,16 +1,28 @@
-from utils.individuo import generar, isValid
 from utils.constantes import NUMERO_DE_POBLACIONES, GENERACIONES, SUPERIOR, INFERIOR
 from utils.restricciones import suma_violaciones
+from utils.restricciones import aEsMejorQueB_deb
+from utils.Algorithm import Algorithm
 import numpy as np
 import random as rd
 
-class PSO:
+class PSO(Algorithm):
+    # Particulas
+    particulas = []
+    # Velocidad de las particulas
+    velocidad = []
     # Valor de aptitud de cada particula
     fitness = np.zeros(NUMERO_DE_POBLACIONES)
-    # Valor de la mejor aptitud de una particula de sus poblacion
-    pbestFitness = np.zeros(NUMERO_DE_POBLACIONES)
     # Valor de numero de violaciones por particula
     noViolaciones = np.zeros(NUMERO_DE_POBLACIONES)
+    
+    # Memoria de la mejor posicion de la particula
+    pbest = []
+    # Memoria del valor de la mejor aptitud de una particula de sus poblacion
+    pbestFitness = []
+    # Memoria del mejor numero de violaciones que tuvo la particula
+    pbestViolaciones = []
+    
+    
     
     gbestAptitud = 0
     gbestViolacion = 0
@@ -23,7 +35,15 @@ class PSO:
     C1 = 1.4944
     C2 = 1.4944
     
-    def __init__(self, limite, evaluar, restr_func, g_funcs=[], h_funcs=[]):
+    def __init__(
+        self,
+        limite, # Funcion para limitar la particula
+        evaluar, # Funcion para evaluar la particula
+        restr_func, # Funcion para restringir la funcion objectiva
+        act_vel, # Funcion de Estrategia de actualizacion de velocidad
+        g_funcs=[], # Lista de funciones de desigualdad <= 0
+        h_funcs=[] # Lista de funciones de igualdad == 0
+    ):
         # Funcion limite a ocupar
         self.limite = limite
         # Funcion aptitud que se va evaluar
@@ -34,71 +54,108 @@ class PSO:
         self.g_funcs = g_funcs
         # Lista de funciones de restricciones de igualdad
         self.h_funcs = h_funcs
+        # Estrategia para actualizar la velocidad
+        self.act_vel = act_vel
         # Solo para la generacion para 0
         # Inicializacion de particulas (poblacion) con vectores de posicion y velocidad
-        self.particulas = generar(INFERIOR, SUPERIOR)
-        self.velocidad = generar(INFERIOR, SUPERIOR)
+        self.particulas = self.generar(INFERIOR, SUPERIOR)
+        self.velocidad = self.generar(INFERIOR, SUPERIOR)
         # Calculo de la aptitud (fitness) para cada particula (individuo)
-        self.calularAptitud()
+        self.calcularAptitud()
         # El primer pbest es inicial
         self.pbest = np.copy(self.particulas)
+        # El primer pbesfitness es inicial
+        self.pbestFitness = np.copy(self.fitness)
+        # Memoria de violaciones que tuvo la particuka
+        self.pbestViolaciones = np.copy(self.noViolaciones)
         # Obtener el mejor de la generacion 0
         self.calcularGbest()
+
+        
     
     # Calculo de la aptitud (fitness) para cada particula (individuo)
-    def calularAptitud(self):
+    def calcularAptitud(self):
         # Calculo del fitness para cada particula
-        for index in range(len(self.particulas)):
+        for index, particula in enumerate(self.particulas):
             # Obtener el fitness
-            fitness = self.evaluar(self.particulas[index])
+            fitness = self.evaluar(particula)
             # Guardar fitness de la particula
             self.fitness[index] = fitness 
-            # Guardar fitness del mejor de su poblacion
-            self.pbestFitness[index] = fitness
             # Obtener la suma de violaciones
             total_de_violaciones = suma_violaciones(
                 self.g_funcs,
                 self.h_funcs,
-                self.particulas[index]
+                particula
             )
+
             # Guardar violacioens
             self.noViolaciones[index] = total_de_violaciones
-
-
+        
+        
     def calcularGbest(self):
-        pass
+        posicion = self.restr_func(self.particulas, self.fitness, self.noViolaciones)
+        
+        self.gbestIndviduo = self.particulas[posicion]
+        self.gbestAptitud = self.fitness[posicion]
+        self.gbestIndVio = self.noViolaciones[posicion]
+
+    def actualizarPbest(self):
+        for index in range(NUMERO_DE_POBLACIONES):
+            # Si el número de violaciones coincide con el anterior
             
+            if aEsMejorQueB_deb(self.pbestFitness[index] , self.pbestViolaciones[index], self.fitness[index], self.noViolaciones[index]) == False:
+                self.pbest[index] = np.copy(self.particulas[index])
+                self.pbestFitness[index] = self.fitness[index]
+                self.pbestViolaciones[index] = self.noViolaciones[index]
+                
+
+    def actualizarAptitud(self):
+        # Actualizar el ftiness de las particulas actuales de la generacion
+        self.calcularAptitud()
+        
+        # Actualizar el pbest
+        self.actualizarPbest()
+        
+    
+    def actualizarVelocidad(self):
+        for index in range(NUMERO_DE_POBLACIONES):
+            for jndex in range(len(self.velocidad[index])):
+                r1 = rd.uniform(0, 1)
+                r2 = rd.uniform(0, 1)
+                actVelocidad = (self.W * self.velocidad[index][jndex] + 
+                                self.C1 * r1 * (self.pbest[index][jndex] - self.velocidad[index][jndex]) + 
+                                    self.C2 * r2 * (self.gbestIndviduo[jndex] - self.velocidad[index][jndex]))
+                self.velocidad[index][jndex] = actVelocidad
+                
+    def actualizarGbest(self):
+        self.calcularGbest()
+        
+    def actualizarPosicion(self):
+        for index in range(NUMERO_DE_POBLACIONES):
+            for jndex in range(len(self.velocidad[index])):
+                self.particulas[index][jndex] = self.particulas[index][jndex] + self.velocidad[index][jndex]
+                
+    def restriccionLimites(self):
+        for index in range(NUMERO_DE_POBLACIONES):
+            if not self.isValid(SUPERIOR, INFERIOR, self.particulas[index]):
+                self.particulas[index] = self.limite(SUPERIOR, INFERIOR, self.particulas[index])
+                self.velocidad[index] = self.act_vel(self.velocidad[index])
+    
     def report(self, generacion: int = 0):
         print("PSO Reporte")
-        for ind, apt, vio in zip(self.particulas, self.fitness, self.noViolaciones):
-            print("Individuo:", ind)
-            print("Aptitud (Fitness):", apt)
-            print("No Violaciones:", vio)
-            print("Valido:", isValid(SUPERIOR, INFERIOR, ind))
-        print("\n")
         print("Solucion Optima")
         print("Individuo:", self.gbestIndviduo)
         print("Fitness:", self.gbestAptitud)
-        print("Num Violaciones:", self.gbestViolacion)
+        print("Num Violaciones:", self.gbestViolacion)       
+            
     def start(self):
         generacion = 1
         while generacion < GENERACIONES:
             self.actualizarVelocidad()
-            self.actualizarPoblacion()
+            self.actualizarPosicion()
+            self.restriccionLimites()
             self.actualizarAptitud()
             self.actualizarGbest()
             
             generacion += 1
-
-    def reset(self):
-        # Solo para la generacion para 0
-        # Inicializacion de particulas (poblacion) con vectores de posicion y velocidad
-        self.particulas = generar(INFERIOR, SUPERIOR)
-        self.velocidad = generar(INFERIOR, SUPERIOR)
-        # Calculo de la aptitud (fitness) para cada particula (individuo)
-        self.calularAptitud()
-        # El primer pbest es inicial
-        self.pbest = np.copy(self.particulas)
-        # Obtener el mejor de la generacion 0
-        self.calculoGbest()
-
+        
