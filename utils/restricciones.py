@@ -1,8 +1,5 @@
 import numpy as np
 
-class Restricciones:
-    pass
-
 
 def suma_violaciones(g_funcs, h_funcs, x):
     # Calcular la suma de max(0, g_j(x))^2
