@@ -23,11 +23,13 @@ class PSO(Algorithm):
     pbestViolaciones = []
     
     
-    
+    # Mejor aptitud de la particula
     gbestAptitud = 0
+    # Mejor violacion de la particula <= 0
     gbestViolacion = 0
-    gbestIndVio = 0
-    gbestIndviduo = []
+    # Mejor particula de la generacion    
+    gbestParticula = []
+    # Mejor velocidad de la particula
     gbestVelocidad = [] 
     
         
@@ -95,9 +97,9 @@ class PSO(Algorithm):
     def calcularGbest(self):
         posicion = self.restr_func(self.particulas, self.fitness, self.noViolaciones)
         
-        self.gbestIndviduo = self.particulas[posicion]
+        self.gbestParticula = self.particulas[posicion]
         self.gbestAptitud = self.fitness[posicion]
-        self.gbestIndVio = self.noViolaciones[posicion]
+        self.gbestViolacion = self.noViolaciones[posicion]
 
     def actualizarPbest(self):
         for index in range(NUMERO_DE_POBLACIONES):
@@ -124,7 +126,7 @@ class PSO(Algorithm):
                 r2 = rd.uniform(0, 1)
                 actVelocidad = (self.W * self.velocidad[index][jndex] + 
                                 self.C1 * r1 * (self.pbest[index][jndex] - self.velocidad[index][jndex]) + 
-                                    self.C2 * r2 * (self.gbestIndviduo[jndex] - self.velocidad[index][jndex]))
+                                    self.C2 * r2 * (self.gbestParticula[jndex] - self.velocidad[index][jndex]))
                 self.velocidad[index][jndex] = actVelocidad
                 
     def actualizarGbest(self):
@@ -141,10 +143,10 @@ class PSO(Algorithm):
                 self.particulas[index] = self.limite(SUPERIOR, INFERIOR, self.particulas[index])
                 self.velocidad[index] = self.act_vel(self.velocidad[index])
     
-    def report(self, generacion: int = 0):
+    def report(self):
         print("PSO Reporte")
         print("Solucion Optima")
-        print("Individuo:", self.gbestIndviduo)
+        print("Individuo:", self.gbestParticula)
         print("Fitness:", self.gbestAptitud)
         print("Num Violaciones:", self.gbestViolacion)       
             
