@@ -17,7 +17,7 @@ def run():
 
         for _ in range(ITERATIONS):
             pso = PSO(
-                Limite.boundary,  # Restriccion de limites
+                Limite.reflex,  # Restriccion de limites
                 CEC2006_g02.CEC2006_g02_aptitud,  # Problema a evaluar
                 deb,  # Restriccion de problema
                 dba,  # Una estrategia de actualizacion de velocidad
