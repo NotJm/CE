@@ -1,7 +1,6 @@
 from utils.constantes import NUMERO_DE_POBLACIONES, GENERACIONES
-from utils.restricciones import suma_violaciones
-from utils.restricciones import aEsMejorQueB_deb
-from utils.Algorithm import Algorithm
+from core.Restricciones import Restricciones
+from core.Algorithm import Algorithm
 import numpy as np
 import random as rd
 
@@ -32,19 +31,21 @@ class PSO(Algorithm):
     # Mejor velocidad de la particula
     gbestVelocidad = [] 
     
-        
+    # Factor de inercia
     W = 0.95
+    # Coeficiente aceleracion cognitiva
     C1 = 1.4944
+    # Coeficiente aceleracion social
     C2 = 1.4944
     
     def __init__(
         self,
         limite, # Funcion para limitar la particula
         evaluar, # Funcion para evaluar la particula
-        superior,
-        inferior,
-        restr_func, # Funcion para restringir la funcion objectiva
-        act_vel, # Funcion de Estrategia de actualizacion de velocidad
+        superior, # Limite Superior de la particulas
+        inferior, # Limite Inferior de la particulas
+        restriccion_de_funcion, # Funcion para restringir la funcion objectiva
+        correcion_de_velocidad, # Funcion de Estrategia de actualizacion de velocidad
         g_funcs=[], # Lista de funciones de desigualdad <= 0
         h_funcs=[] # Lista de funciones de igualdad == 0
     ):
@@ -56,19 +57,19 @@ class PSO(Algorithm):
         self.superior = superior
         self.inferior = inferior
         # Funcion para restricciones funcionales
-        self.restr_func = restr_func
+        self.restriccion_de_funcion = restriccion_de_funcion
         # Lista de funciones de restricciones de desigualdad
         self.g_funcs = g_funcs
         # Lista de funciones de restricciones de igualdad
         self.h_funcs = h_funcs
         # Estrategia para actualizar la velocidad
-        self.act_vel = act_vel
+        self.act_vel = correcion_de_velocidad
         # Solo para la generacion para 0
         # Inicializacion de particulas (poblacion) con vectores de posicion y velocidad
         self.particulas = self.generar(self.inferior, self.superior)
         self.velocidad = self.generar(self.inferior, self.superior)
         # Calculo de la aptitud (fitness) para cada particula (individuo)
-        self.calcularAptitud()
+        self.calcularFitnessYSumaDeViolaciones()
         # El primer pbest es inicial
         self.pbest = np.copy(self.particulas)
         # El primer pbesfitness es inicial
@@ -76,12 +77,12 @@ class PSO(Algorithm):
         # Memoria de violaciones que tuvo la particuka
         self.pbestViolaciones = np.copy(self.noViolaciones)
         # Obtener el mejor de la generacion 0
-        self.calcularGbest()
+        self.obtenerGgestPoblacion0()
 
         
     
     # Calculo de la aptitud (fitness) para cada particula (individuo)
-    def calcularAptitud(self):
+    def calcularFitnessYSumaDeViolaciones(self):
         # Calculo del fitness para cada particula
         for index, particula in enumerate(self.particulas):
             # Obtener el fitness
@@ -89,7 +90,7 @@ class PSO(Algorithm):
             # Guardar fitness de la particula
             self.fitness[index] = fitness 
             # Obtener la suma de violaciones
-            total_de_violaciones = suma_violaciones(
+            total_de_violaciones = Restricciones.suma_violaciones(
                 self.g_funcs,
                 self.h_funcs,
                 particula
@@ -99,30 +100,18 @@ class PSO(Algorithm):
             self.noViolaciones[index] = total_de_violaciones
         
         
-    def calcularGbest(self):
-        posicion = self.restr_func(self.particulas, self.fitness, self.noViolaciones)
-        
-        self.gbestParticula = self.particulas[posicion]
-        self.gbestAptitud = self.fitness[posicion]
-        self.gbestViolacion = self.noViolaciones[posicion]
+    
 
     def actualizarPbest(self):
         for index in range(NUMERO_DE_POBLACIONES):
             # Si el número de violaciones coincide con el anterior
-            
-            if aEsMejorQueB_deb(self.pbestFitness[index] , self.pbestViolaciones[index], self.fitness[index], self.noViolaciones[index]) == False:
+            if self.restriccion_de_funcion(self.pbestFitness[index] , self.pbestViolaciones[index], self.fitness[index], self.noViolaciones[index]) == False:
                 self.pbest[index] = np.copy(self.particulas[index])
                 self.pbestFitness[index] = self.fitness[index]
                 self.pbestViolaciones[index] = self.noViolaciones[index]
                 
 
-    def actualizarAptitud(self):
-        # Actualizar el ftiness de las particulas actuales de la generacion
-        self.calcularAptitud()
-        
-        # Actualizar el pbest
-        self.actualizarPbest()
-        
+   
     
     def actualizarVelocidad(self):
         for index in range(NUMERO_DE_POBLACIONES):
@@ -136,7 +125,26 @@ class PSO(Algorithm):
                 
     def actualizarGbest(self):
         self.calcularGbest()
+            
+    def obtenerGbestPoblacion0(self):
+        posInicialGbest=0
+        self.gbestParticula = self.particulas[posInicialGbest]
+        self.gbestAptitud = self.fitness[posInicialGbest]
+        self.gbestViolacion = self.noViolaciones[posInicialGbest]
+        self.actualizarPosicionGbestDePoblacion()
         
+    def actualizarPosicionGbestDePoblacion(self):
+        for x in range(0, len(self.particulas)):
+
+            current_fitness = self.fitness[x]
+            current_violacion = self.noViolaciones[x]
+            
+            if self.restriccion_de_funcion(self.gbestAptitud, self.gbestViolacion, current_fitness, current_violacion) == False:
+                self.gbestAptitud = current_fitness
+                self.gbestViolacion = current_violacion
+                self.gbestParticula = self.particulas[x]      
+    
+    
     def actualizarPosicion(self):
         for index in range(NUMERO_DE_POBLACIONES):
             for jndex in range(len(self.velocidad[index])):
@@ -161,8 +169,9 @@ class PSO(Algorithm):
             self.actualizarVelocidad()
             self.actualizarPosicion()
             self.restriccionLimites()
-            self.actualizarAptitud()
-            self.actualizarGbest()
+            self.calcularFitnessYSumaDeViolaciones()
+            self.actualizarPbest()
+            self.actualizarPosicionGbestDePoblacion()
             
             generacion += 1
         

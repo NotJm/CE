@@ -1,4 +1,4 @@
-from utils.constantes import NUMERO_DE_POBLACIONES
+from utils.constantes import TAMANO_DE_POBLACIONES
 from abc import ABC, abstractmethod
 import numpy as np
 import random as rd
@@ -20,7 +20,7 @@ class Algorithm:
         poblacion=[]
 
         # Genera la poblacion de acuerdo al numero de individuos especificados
-        for _ in range(NUMERO_DE_POBLACIONES):
+        for _ in range(TAMANO_DE_POBLACIONES):
             poblacion.append(self.generar_individuo(superior, inferior))
         return np.array(poblacion)
         
@@ -30,6 +30,7 @@ class Algorithm:
             if not (inf <= x <= sup):
                 return False
         return True
+    
     
 
     

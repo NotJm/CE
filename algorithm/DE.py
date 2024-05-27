@@ -1,8 +1,8 @@
 import numpy as np
 import random as rd
-from utils.constantes import NUMERO_DE_POBLACIONES, GENERACIONES
-from utils.restricciones import suma_violaciones, aEsMejorQueB_deb
-from utils.Algorithm import Algorithm
+from utils.constantes import TAMANO_DE_POBLACIONES, GENERATION
+from core.Restricciones import suma_violaciones, aEsMejorQueB_deb
+from core.Algorithm import Algorithm
 
 class DE(Algorithm):
     F = 0.5  # Factor de mutación
@@ -14,7 +14,7 @@ class DE(Algorithm):
         evaluar, # Función para evaluar la partícula
         superior,
         inferior,
-        restr_func, # Función para restringir la función objetivo
+        restriccion_de_funcion, # Función para restringir la función objetivo
         g_funcs=[], # Lista de funciones de desigualdad <= 0
         h_funcs=[] # Lista de funciones de igualdad == 0
     ):
@@ -30,16 +30,16 @@ class DE(Algorithm):
         """
         self.limite = limite
         self.evaluar = evaluar
-        self.restr_func = restr_func
+        self.restriccion_de_funcion = restriccion_de_funcion
         self.superior = superior
         self.inferior = inferior
-        self.g_funcs = g_funcs
-        self.h_funcs = h_funcs
+        self.g_funcs = g_funcs #Desigualdad
+        self.h_funcs = h_funcs #Igualdad 
 
         # Inicialización de la población
         self.poblacion = self.generar(self.inferior, self.superior)
-        self.fitness = np.zeros(NUMERO_DE_POBLACIONES)
-        self.noViolaciones = np.zeros(NUMERO_DE_POBLACIONES)
+        self.fitness = np.zeros(TAMANO_DE_POBLACIONES)
+        self.noViolaciones = np.zeros(TAMANO_DE_POBLACIONES)
 
         # Variables para almacenar la mejor solución encontrada
         self.gbestIndividuo = []
@@ -47,10 +47,10 @@ class DE(Algorithm):
         self.gbestViolacion = float('inf')
 
         # Cálculo inicial de aptitudes y mejor solución
-        self.calcularAptitud()
-        self.calcularGbest()
+        self.calcular_aptitud_y_violaciones()
+        self.obtenerMejorIndividuo()
 
-    def calcularAptitud(self):
+    def calcular_aptitud_y_violaciones(self):
         """
         Calcula la aptitud y el número de violaciones de restricciones para cada individuo en la población.
         """
@@ -60,7 +60,7 @@ class DE(Algorithm):
             total_de_violaciones = suma_violaciones(self.g_funcs, self.h_funcs, individuo)
             self.noViolaciones[index] = total_de_violaciones
 
-    def calcularGbest(self):
+    def obtenerMejorIndividuo(self):
         """
         Calcula el mejor individuo de la población según las restricciones.
         """
@@ -79,7 +79,7 @@ class DE(Algorithm):
         Returns:
             np.array: Vector mutante.
         """
-        indices = list(range(NUMERO_DE_POBLACIONES))
+        indices = list(range(TAMANO_DE_POBLACIONES))
         indices.remove(indice)
         a, b, c = rd.sample(indices, 3)
         mutante = self.poblacion[a] + self.F * (self.poblacion[b] - self.poblacion[c])
@@ -121,12 +121,12 @@ class DE(Algorithm):
         """
         Ejecuta el proceso de Evolución Diferencial.
         """
-        for generacion in range(GENERACIONES):
-            for i in range(NUMERO_DE_POBLACIONES):
+        for generacion in range(GENERATION):
+            for i in range(TAMANO_DE_POBLACIONES):
                 mutante = self.mutacion(i)
                 hijo = self.cruze(mutante, i)
                 self.seleccion(hijo, i)
-            self.calcularGbest()
+            self.calcular_aptitud_y_violaciones()
 
     def report(self):
         """
