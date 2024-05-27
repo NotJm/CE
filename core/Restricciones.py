@@ -12,7 +12,7 @@ class Restricciones:
         suma_violaciones = suma_desigualdad + suma_igualdad
 
         return suma_violaciones
-    
+        
     @staticmethod
     # Metodo para obtener el mejor individuo en base al as reglas de DEB
     def aEsMejorQueB_deb(a_fitness, a_violaciones, b_fitness, b_violaciones) ->bool:

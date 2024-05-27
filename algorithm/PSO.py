@@ -82,6 +82,7 @@ class PSO(Algorithm):
         
     
     # Calculo de la aptitud (fitness) para cada particula (individuo)
+    # Y Calcular la suma de violaciones que tuvo la particula
     def calcularFitnessYSumaDeViolaciones(self):
         # Calculo del fitness para cada particula
         for index, particula in enumerate(self.particulas):
@@ -101,11 +102,12 @@ class PSO(Algorithm):
         
         
     
-
+    # Metodo para actualizar la mejor poscion que obtuvo de las particulas
     def actualizarPbest(self):
         for index in range(NUMERO_DE_POBLACIONES):
             # Si el número de violaciones coincide con el anterior
             if self.restriccion_de_funcion(self.pbestFitness[index] , self.pbestViolaciones[index], self.fitness[index], self.noViolaciones[index]) == False:
+                # Actualizacion de pbest
                 self.pbest[index] = np.copy(self.particulas[index])
                 self.pbestFitness[index] = self.fitness[index]
                 self.pbestViolaciones[index] = self.noViolaciones[index]
@@ -156,14 +158,14 @@ class PSO(Algorithm):
                 self.particulas[index] = self.limite(self.superior, self.inferior, self.particulas[index])
                 self.velocidad[index] = self.act_vel(self.velocidad[index])
     
-    def report(self):
+    def reporte(self):
         print("PSO Reporte")
         print("Solucion Optima")
         print("Individuo:", self.gbestParticula)
         print("Fitness:", self.gbestAptitud)
         print("Num Violaciones:", self.gbestViolacion)       
             
-    def start(self):
+    def optimizar(self):
         generacion = 1
         while generacion < GENERACIONES:
             self.actualizarVelocidad()

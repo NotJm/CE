@@ -1,6 +1,6 @@
 import numpy as np
 import random as rd
-from utils.constantes import TAMANO_DE_POBLACIONES, GENERATION
+from utils.constantes import SIZE_POBLATION, GENERATIONS
 from core.Restricciones import suma_violaciones, aEsMejorQueB_deb
 from core.Algorithm import Algorithm
 
@@ -38,13 +38,13 @@ class DE(Algorithm):
 
         # Inicialización de la población
         self.poblacion = self.generar(self.inferior, self.superior)
-        self.fitness = np.zeros(TAMANO_DE_POBLACIONES)
-        self.noViolaciones = np.zeros(TAMANO_DE_POBLACIONES)
+        self.fitness = np.zeros(SIZE_POBLATION)
+        self.noViolaciones = np.zeros(SIZE_POBLATION)
 
         # Variables para almacenar la mejor solución encontrada
-        self.gbestIndividuo = []
-        self.gbestAptitud = float('inf')
-        self.gbestViolacion = float('inf')
+        self.mejorIndividuo = []
+        self.mejorAptitud = float('inf')
+        self.mejorViolacion = float('inf')
 
         # Cálculo inicial de aptitudes y mejor solución
         self.calcular_aptitud_y_violaciones()
@@ -61,13 +61,36 @@ class DE(Algorithm):
             self.noViolaciones[index] = total_de_violaciones
 
     def obtenerMejorIndividuo(self):
+        if self.mejorIndividuo is None:
+            individuo = 0
+            self.mejorIndividuo = self.mejorIndividuo[individuo]
+            self.mejorAptitud = self.mejorAptitud[individuo]
+            self.numero_de_Violaciones = self.numero_de_Violaciones[individuo]
+        self.actualizarMejorIndividuo()
+
+    def actualizarMejorIndividuo(self):
         """
         Calcula el mejor individuo de la población según las restricciones.
+        
         """
+        for i in range(self.SIZE_POBLATION):
+            
+            current_individuo= self.fitness[i]
+            current_violacion = self.noViolaciones[i]
+
+            if self.restriccion_de_funcion(self.mejorAptitud, self.numero_de_Violaciones,  current_individuo, current_violacion):
+                self.mejorAptitud =  current_individuo[i]
+                self.numero_de_Violaciones = current_violacion[i]
+                self.mejorIndividuo = self.mejorIndividuo[i]
+
+
+
+        """ 
         posicion = self.restr_func(self.poblacion, self.fitness, self.noViolaciones)
         self.gbestIndividuo = self.poblacion[posicion]
         self.gbestAptitud = self.fitness[posicion]
-        self.gbestViolacion = self.noViolaciones[posicion]
+        self.gbestViolacion = self.noViolaciones[posicion] 
+        """
 
     def mutacion(self, indice):
         """
@@ -79,7 +102,7 @@ class DE(Algorithm):
         Returns:
             np.array: Vector mutante.
         """
-        indices = list(range(TAMANO_DE_POBLACIONES))
+        indices = list(range(SIZE_POBLATION))
         indices.remove(indice)
         a, b, c = rd.sample(indices, 3)
         mutante = self.poblacion[a] + self.F * (self.poblacion[b] - self.poblacion[c])
@@ -121,8 +144,8 @@ class DE(Algorithm):
         """
         Ejecuta el proceso de Evolución Diferencial.
         """
-        for generacion in range(GENERATION):
-            for i in range(TAMANO_DE_POBLACIONES):
+        for generacion in range(GENERATIONS):
+            for i in range(SIZE_POBLATION):
                 mutante = self.mutacion(i)
                 hijo = self.cruze(mutante, i)
                 self.seleccion(hijo, i)
