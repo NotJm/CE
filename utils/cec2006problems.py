@@ -1,31 +1,51 @@
 import numpy as np
 from enum import Enum
 from abc import ABC, abstractmethod
+from typing import List, Callable
 
 class TipoProblema(Enum):
     CONSTRAINED = 1
     UNCONSTRAINED = 2
 
-
 class Problema(ABC):
-    
-    def __init__(self, tipo: TipoProblema):
-        self.tipo = tipo
+    def __init__(
+        self, tipo: TipoProblema,
+        superior: np.array,
+        inferior: np.array,
+        rest_g: List[Callable[[np.array], float]],
+        rest_h: List[Callable[[np.array], float]]):
         
+        self.tipo = tipo
+        self.superior = superior
+        self.inferior = inferior
+        self.rest_g = rest_g
+        self.rest_h = rest_h
+
     @abstractmethod
-    def fitness(self,x):
+    def fitness(self, x: np.array) -> float:
         pass
 
-
-
-#Problema 01
-class CEC2006_G01:
+# Problema 01
+class CEC2006_G01(Problema):
     
-    
+    SUPERIOR = [1,1,1,1,1,1,1,1,1,100,100,100,1]
+    INFERIOR = [0,0,0,0,0,0,0,0,0,0,0,0,0]
 
+    def __init__(self):
+        rest_g = [
+            CEC2006_G01.cec2006_g01_g1,
+            CEC2006_G01.cec2006_g01_g2,
+            CEC2006_G01.cec2006_g01_g3,
+            CEC2006_G01.cec2006_g01_g4,
+            CEC2006_G01.cec2006_g01_g5,
+            CEC2006_G01.cec2006_g01_g6,
+            CEC2006_G01.cec2006_g01_g7,
+            CEC2006_G01.cec2006_g01_g8,
+            CEC2006_G01.cec2006_g01_g9
+        ]
+        super().__init__(TipoProblema.CONSTRAINED, CEC2006_G01.SUPERIOR, CEC2006_G01.INFERIOR, rest_g, [])
     
-    @staticmethod
-    def cec2006_g01_aptitud(individuo:np.array):     
+    def fitness(self, individuo: np.array) -> float:
         sum1 = np.sum(individuo[0:4])
         sum2 = np.sum(individuo[0:4]**2)
         sum3 = np.sum(individuo[4:13])
@@ -77,10 +97,24 @@ class CEC2006_G01:
 
 #Problema 02
 
-class CEC2006_g02:
+class CEC2006_G02(Problema):
+    SUPERIOR = [10] * 20
+    INFERIOR = [0] * 20
 
-    @staticmethod
-    def CEC2006_g02_aptitud(individuo: np.array):
+    def __init__(self):
+        rest_g = [
+            CEC2006_G02.cec2006_g02_g1,
+            CEC2006_G02.cec2006_g02_g2,
+        ]
+        super().__init__(
+            TipoProblema.CONSTRAINED,
+            CEC2006_G02.SUPERIOR,
+            CEC2006_G02.INFERIOR,
+            rest_g,
+            []
+            )
+
+    def fitness(self, individuo: np.array) -> float:
         sum_cos4 = np.sum(np.cos(individuo)**4)
         prod_cos2 = np.prod(np.cos(individuo)**2)
         sum_ix2 = np.sum((np.arange(1, len(individuo) + 1) * individuo**2))
@@ -88,13 +122,13 @@ class CEC2006_g02:
         return f_x
 
     @staticmethod
-    def CEC2006_g02_g1(x):  # restriccion 1 de desigualdad <= 0
+    def cec2006_g02_g1(x):  # restriccion 1 de desigualdad <= 0
         product_x = np.prod(x)
         result = 0.75 - product_x
         return result
 
     @staticmethod
-    def CEC2006_g02_g2(x):  # restriccion 2 de desigualdad <= 0
+    def cec2006_g02_g2(x):  # restriccion 2 de desigualdad <= 0
         sum_x = np.sum(x)
         n = len(x)
         result = sum_x - 7.5 * n
@@ -107,10 +141,23 @@ class CEC2006_g02:
 
 #Problema 03
 
-class CEC2006_G03:
-    
-    @staticmethod
-    def cec2006_g03_aptitud(individuo:np.array):     
+class CEC2006_G03(Problema):
+    SUPERIOR = [1] * 10
+    INFERIOR = [0] * 10
+
+    def __init__(self):
+        rest_h = [
+            CEC2006_G03.cec2006_g03_h1
+        ]
+        super().__init__(
+            TipoProblema.CONSTRAINED,
+            CEC2006_G02.SUPERIOR,
+            CEC2006_G02.INFERIOR,
+            [],
+            rest_h,
+            )
+
+    def fitness(self, individuo: np.array) -> float:
         n = len(individuo)
         product_x = np.prod(individuo)
         f_x = -(np.sqrt(n)**n * product_x)
@@ -128,9 +175,22 @@ class CEC2006_G03:
 #Problema 04
 
 class CEC2006_G04:
+    
+    SUPERIOR = [102, 45, 45, 45, 45]
+    INFERIOR = [78, 33, 27, 27, 27]
 
-    @staticmethod
-    def cec2006_g04_aptitud(individuo:np.array):
+    def __init__(self):
+        rest_g = [
+            CEC2006_G04.cec2006_g04_g1,
+            CEC2006_G04.cec2006_g04_g2,
+            CEC2006_G04.cec2006_g04_g3,
+            CEC2006_G04.cec2006_g04_g4,
+            CEC2006_G04.cec2006_g04_g5,
+            CEC2006_G04.cec2006_g04_g6
+        ]
+        super().__init__(TipoProblema.UNCONSTRAINED, CEC2006_G03.SUPERIOR, CEC2006_G03.INFERIOR, rest_g, [])
+
+    def fitness(self, individuo: np.array) -> float:
         x1, x3, x5 = individuo[0], individuo[2], individuo[4]
         f_x = 5.3578547 * x3**2 + 0.8356891 * x1 * x5 + 37.293239 * x1 - 40792.141
         return f_x
@@ -159,7 +219,7 @@ class CEC2006_G04:
         return -9.300961 - 0.0047026 * x[2] * x[4] - 0.0012547 * x[0] * x[2] - 0.0019085 * x[2] * x[3] + 20
 
 
-#Notas: donde 78 ≤ x1 ≤ 102,33 ≤ x2 ≤ 45 y 27 ≤ xi ≤ 45(i = 3,4,5)
+#Notas: donde 78 ≤ x1 ≤ 102, 33 ≤ x2 ≤ 45 y 27 ≤ xi ≤ 45(i = 3,4,5)
 
 #********************************************************************************************************************************
 

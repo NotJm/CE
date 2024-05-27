@@ -1,4 +1,4 @@
-from utils.constantes import NUMERO_DE_POBLACIONES, GENERACIONES, SUPERIOR, INFERIOR
+from utils.constantes import NUMERO_DE_POBLACIONES, GENERACIONES
 from utils.restricciones import suma_violaciones
 from utils.restricciones import aEsMejorQueB_deb
 from utils.Algorithm import Algorithm
@@ -41,6 +41,8 @@ class PSO(Algorithm):
         self,
         limite, # Funcion para limitar la particula
         evaluar, # Funcion para evaluar la particula
+        superior,
+        inferior,
         restr_func, # Funcion para restringir la funcion objectiva
         act_vel, # Funcion de Estrategia de actualizacion de velocidad
         g_funcs=[], # Lista de funciones de desigualdad <= 0
@@ -50,6 +52,9 @@ class PSO(Algorithm):
         self.limite = limite
         # Funcion aptitud que se va evaluar
         self.evaluar = evaluar
+        # Limites self.superiores e self.inferiores
+        self.superior = superior
+        self.inferior = inferior
         # Funcion para restricciones funcionales
         self.restr_func = restr_func
         # Lista de funciones de restricciones de desigualdad
@@ -60,8 +65,8 @@ class PSO(Algorithm):
         self.act_vel = act_vel
         # Solo para la generacion para 0
         # Inicializacion de particulas (poblacion) con vectores de posicion y velocidad
-        self.particulas = self.generar(INFERIOR, SUPERIOR)
-        self.velocidad = self.generar(INFERIOR, SUPERIOR)
+        self.particulas = self.generar(self.inferior, self.superior)
+        self.velocidad = self.generar(self.inferior, self.superior)
         # Calculo de la aptitud (fitness) para cada particula (individuo)
         self.calcularAptitud()
         # El primer pbest es inicial
@@ -139,8 +144,8 @@ class PSO(Algorithm):
                 
     def restriccionLimites(self):
         for index in range(NUMERO_DE_POBLACIONES):
-            if not self.isValid(SUPERIOR, INFERIOR, self.particulas[index]):
-                self.particulas[index] = self.limite(SUPERIOR, INFERIOR, self.particulas[index])
+            if not self.isValid(self.superior, self.inferior, self.particulas[index]):
+                self.particulas[index] = self.limite(self.superior, self.inferior, self.particulas[index])
                 self.velocidad[index] = self.act_vel(self.velocidad[index])
     
     def report(self):

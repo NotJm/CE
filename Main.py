@@ -1,8 +1,9 @@
 from PSO import PSO
+from DE import DE
 from progress.bar import Bar
 from utils.Limites import Limite
 from utils.velocidad import dba
-from utils.cec2006problems import CEC2006_g02, CEC2006_G01, CEC2006_G03
+from utils.cec2006problems import CEC2006_G02
 from utils.restricciones import deb
 
 ITERATIONS = 25
@@ -10,18 +11,39 @@ individuo = []
 aptitud = []
 violaciones = []
 
+problema = CEC2006_G02()
+
 
 def run():
+    
     
     with Bar("Procesando", max=ITERATIONS) as bar:
 
         for _ in range(ITERATIONS):
+            # de = DE(
+            #     Limite.reflex,
+            #     problema.fitness,
+            #     problema.SUPERIOR,
+            #     problema.INFERIOR,
+            #     deb,
+            #     problema.rest_g,
+            #     problema.rest_h
+            # )
+            
+            # de.start()
+            # individuo.append(de.gbestIndividuo)
+            # aptitud.append(de.gbestAptitud)
+            # violaciones.append(de.gbestViolacion)   
+            
             pso = PSO(
                 Limite.reflex,  # Restriccion de limites
-                CEC2006_g02.CEC2006_g02_aptitud,  # Problema a evaluar
+                problema.fitness,  # Problema a evaluar
+                problema.SUPERIOR, # Límites superiores del individuo
+                problema.INFERIOR, # Límites inferiores del individuo
                 deb,  # Restriccion de problema
-                dba,  # Una estrategia de actualizacion de velocidad
-                [CEC2006_g02.CEC2006_g02_g1, CEC2006_g02.CEC2006_g02_g2] # Son restricciones para el problema,
+                dba,  # Una estrategia de actualizacion de velocidad,
+                problema.rest_g, # Son restricciones de desigualdad para el problema,
+                problema.rest_h, # Son restricciones de igualdad para el problema,
             )
             
             pso.start()

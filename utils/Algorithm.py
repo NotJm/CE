@@ -4,7 +4,7 @@ import numpy as np
 import random as rd
 
 
-class Algorithm(ABC):
+class Algorithm:
     
     # Metodo general para generar individuos segun los rangos superiores e inferiores 
     def generar_individuo(self, superior: list, inferior: list) -> np.array:
@@ -31,10 +31,5 @@ class Algorithm(ABC):
                 return False
         return True
     
-    @abstractmethod    
-    def start(self): pass
-    
-    @abstractmethod
-    def report(self): pass
-    
+
     
