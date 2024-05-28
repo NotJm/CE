@@ -61,3 +61,5 @@ class CEC2020_RC01(Problem):
     @staticmethod
     def CEC2020_RC01_h8(x):
         return x[5] * np.log(x[8] - x[6]) - x[5] * np.log(600) - x[8] + x[6] + 600 # restriccion 8 de igualdad = 0
+
+#
