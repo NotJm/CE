@@ -11,7 +11,7 @@ from utils.constantes import ITERATIONS
 
 # Funciones objetivas
 from problems.cec2006problems import CEC2006_G01, CEC2006_G02, CEC2006_G03
-from problems.cec2020problems import CEC2020_G01
+from problems.cec2020problems import CEC2020_RC01
 
 
 
