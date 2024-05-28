@@ -1,11 +1,11 @@
 from utils.constantes import SIZE_POBLATION, GENERATIONS
 from core.Restricciones import Restricciones
-from core.Algorithm import Algorithm
+from core.Algoritmo import Algoritmo
 from tqdm import tqdm
 import numpy as np
 
 
-class DE(Algorithm):
+class DE(Algoritmo):
     # Poblacion
     poblacion = []
     # Fitness de los individuos de la poblacion

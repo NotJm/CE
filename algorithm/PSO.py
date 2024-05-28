@@ -1,13 +1,12 @@
 from utils.constantes import SIZE_POBLATION, GENERATIONS
 from core.Restricciones import Restricciones
-from core.Algorithm import Algorithm
+from core.Algoritmo import Algoritmo
 from tqdm import tqdm
 import numpy as np
 import random as rd
-import logging as log
 
 
-class PSO(Algorithm):
+class PSO(Algoritmo):
     # Particulas
     particulas = []
     # Velocidad de las particulas
@@ -51,8 +50,6 @@ class PSO(Algorithm):
         g_funcs=[],  # Lista de funciones de desigualdad <= 0
         h_funcs=[],  # Lista de funciones de igualdad == 0
     ):
-        # Configuracion de loggin
-        self.logger = self.ConfiguracionDeLogger()
 
         # Funcion limite a ocupar
         self.limite = limite
@@ -83,11 +80,6 @@ class PSO(Algorithm):
         self.pbestViolaciones = np.copy(self.noViolaciones)
         # Obtener el mejor de la generacion 0
         self.obtenerGbestPoblacion0()
-
-    # Configuracion de logger
-    def ConfiguracionDeLogger(self):
-        logger = log.getLogger("Reporte")
-        logger.setLevel(log.DEBUG)
 
     # Calculo de la aptitud (fitness) para cada particula (individuo)
     # Y Calcular la suma de violaciones que tuvo la particula
@@ -187,7 +179,7 @@ class PSO(Algorithm):
         generacion = 1
         with tqdm(
             total=GENERATIONS,
-            desc="Optimizando:",
+            desc="Optimizando",
             unit="iter",
             ncols=95,
             bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",

@@ -3,7 +3,7 @@ import numpy as np
 import random as rd
 
 
-class Algorithm:
+class Algoritmo:
     
     # Metodo general para generar individuos segun los rangos superiores e inferiores 
     def generar_individuo(self, superior: list, inferior: list) -> np.array:

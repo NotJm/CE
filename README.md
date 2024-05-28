@@ -1,4 +1,4 @@
-# Proyecto PSO
+# Proyecto CE
 
 Este proyecto implementa un marco de trabajo para algoritmos de optimización, incluyendo Particle Swarm Optimization (PSO) y Differential Evolution (DE).
 

@@ -1,11 +1,11 @@
 import numpy as np
-from Problem import Problem, ProblemType
+from .Problem import Problem, ProblemType
 
 # Problema 01
 class CEC2020_G01(Problem):
     
-    SUPERIOR = [1,1,1,1,1,1,1,1,1,100,100,100,1]
-    INFERIOR = [0,0,0,0,0,0,0,0,0,0,0,0,0]
+    SUPERIOR = np.array([1,1,1,1,1,1,1,1,1,100,100,100,1])
+    INFERIOR = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0])
 
     def __init__(self):
         rest_g = [
