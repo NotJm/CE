@@ -1,35 +1,11 @@
 import numpy as np
-from enum import Enum
-from abc import ABC, abstractmethod
-from typing import List, Callable
+from .Problem import Problem, ProblemType
 
-class TipoProblema(Enum):
-    CONSTRAINED = 1
-    UNCONSTRAINED = 2
-
-class Problema(ABC):
-    def __init__(
-        self, tipo: TipoProblema,
-        superior: np.array,
-        inferior: np.array,
-        rest_g: List[Callable[[np.array], float]],
-        rest_h: List[Callable[[np.array], float]]):
-        
-        self.tipo = tipo
-        self.superior = superior
-        self.inferior = inferior
-        self.rest_g = rest_g
-        self.rest_h = rest_h
-
-    @abstractmethod
-    def fitness(self, x: np.array) -> float:
-        pass
-
-# Problema 01
-class CEC2006_G01(Problema):
+# Problem 01
+class CEC2006_G01(Problem):
     
-    SUPERIOR = [1,1,1,1,1,1,1,1,1,100,100,100,1]
-    INFERIOR = [0,0,0,0,0,0,0,0,0,0,0,0,0]
+    SUPERIOR = np.array([1,1,1,1,1,1,1,1,1,100,100,100,1])
+    INFERIOR = np.array([0,0,0,0,0,0,0,0,0,0,0,0,0])
 
     def __init__(self):
         rest_g = [
@@ -43,9 +19,9 @@ class CEC2006_G01(Problema):
             CEC2006_G01.cec2006_g01_g8,
             CEC2006_G01.cec2006_g01_g9
         ]
-        super().__init__(TipoProblema.CONSTRAINED, CEC2006_G01.SUPERIOR, CEC2006_G01.INFERIOR, rest_g, [])
+        super().__init__(ProblemType.CONSTRAINED, CEC2006_G01.SUPERIOR, CEC2006_G01.INFERIOR, rest_g, [])
     
-    def fitness(self, individuo: np.array,) -> float:
+    def fitness(self, individuo: np.array) -> float:
         sum1 = np.sum(individuo[0:4])
         sum2 = np.sum(individuo[0:4]**2)
         sum3 = np.sum(individuo[4:13])
@@ -95,10 +71,10 @@ class CEC2006_G01(Problema):
     
 #********************************************************************************************************************************
 
-#Problema 02
+#Problem 02
 
-class CEC2006_G02(Problema):
-    SUPERIOR = [10] * 20
+class CEC2006_G02(Problem):
+    SUPERIOR = np.array([10] * 20)
     INFERIOR = [0] * 20
 
     def __init__(self):
@@ -107,7 +83,7 @@ class CEC2006_G02(Problema):
             CEC2006_G02.cec2006_g02_g2,
         ]
         super().__init__(
-            TipoProblema.CONSTRAINED,
+            ProblemType.CONSTRAINED,
             CEC2006_G02.SUPERIOR,
             CEC2006_G02.INFERIOR,
             rest_g,
@@ -139,18 +115,18 @@ class CEC2006_G02(Problema):
 
 #********************************************************************************************************************************
 
-#Problema 03
+#Problem 03
 
-class CEC2006_G03(Problema):
-    SUPERIOR = [1] * 10
-    INFERIOR = [0] * 10
+class CEC2006_G03(Problem):
+    SUPERIOR = np.array([1] * 10)
+    INFERIOR = np.array([0] * 10)
 
     def __init__(self):
         rest_h = [
             CEC2006_G03.cec2006_g03_h1
         ]
         super().__init__(
-            TipoProblema.CONSTRAINED,
+            ProblemType.CONSTRAINED,
             CEC2006_G02.SUPERIOR,
             CEC2006_G02.INFERIOR,
             [],
@@ -172,7 +148,7 @@ class CEC2006_G03(Problema):
 
 #********************************************************************************************************************************
 
-#Problema 04
+#Problem 04
 
 class CEC2006_G04:
     
@@ -188,7 +164,7 @@ class CEC2006_G04:
             CEC2006_G04.cec2006_g04_g5,
             CEC2006_G04.cec2006_g04_g6
         ]
-        super().__init__(TipoProblema.UNCONSTRAINED, CEC2006_G03.SUPERIOR, CEC2006_G03.INFERIOR, rest_g, [])
+        super().__init__(ProblemType.UNCONSTRAINED, CEC2006_G03.SUPERIOR, CEC2006_G03.INFERIOR, rest_g, [])
 
     def fitness(self, individuo: np.array) -> float:
         x1, x3, x5 = individuo[0], individuo[2], individuo[4]
@@ -223,7 +199,7 @@ class CEC2006_G04:
 
 #********************************************************************************************************************************
 
-#Problema 05
+#Problem 05
 
 class CEC2006_G05:
 
@@ -259,7 +235,7 @@ class CEC2006_G05:
 
 #********************************************************************************************************************************
 
-#Problema 06
+#Problem 06
 class CEC2006_G06:
 
     @staticmethod
@@ -281,7 +257,7 @@ class CEC2006_G06:
 
 #********************************************************************************************************************************
 
-#Problema 07
+#Problem 07
 
 class CEC2006_G07:
 
@@ -329,7 +305,7 @@ class CEC2006_G07:
     
 #********************************************************************************************************************************
 
-#Problema 08
+#Problem 08
 
 class CEC2006_G08:
     
@@ -352,7 +328,7 @@ class CEC2006_G08:
     
 #********************************************************************************************************************************
 
-#Problema 9
+#Problem 9
 
 class CEC2006_G09:
     
@@ -378,45 +354,3 @@ class CEC2006_G09:
     @staticmethod
     def cec2006_g09_g4(x): # restriccion 4 de desigualdad <= 0
         return 4 * x[1]**2 + x[2]**2 - 3 * x[0] * x[1] + 2 * x[3]**2 + 5 * x[5] - 11 * x[6]    
-
-
-#********************************************************************************************************************************
-
-#Problema 10
-
-
-#********************************************************************************************************************************
-
-#Problema 11
-
-
-#********************************************************************************************************************************
-
-#Problema 12
-
-
-#********************************************************************************************************************************
-
-#Problema 13
-
-
-#********************************************************************************************************************************
-
-#Problema 14
-
-
-#********************************************************************************************************************************
-
-#Problema 15
-
-
-
-#********************************************************************************************************************************
-
-#Problema 16
-
-
-
-#********************************************************************************************************************************
-
-#Problema 17

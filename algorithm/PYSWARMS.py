@@ -1,36 +1,29 @@
-# Import modules
 import numpy as np
-
-# Import PySwarms
 import pyswarms as ps
 from pyswarms.utils.functions import single_obj as fx
 
-# Import problems
-from cec2006problems import *
 
-# Set-up bounds
-upper = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 100, 100, 100, 1])
+# Definir los límites
 lower = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+upper = np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 100, 100, 100, 1])
 
+# Configurar los hiperparámetros
+options = {'c1': 1.4944, 'c2': 1.4944, 'w': 0.95}
 
-# Set-up hyperparameters
-options = {'c1': 1.4944, 'c2': 1.4944   , 'w':0.95}
+# Establecer los límites
+bounds = (lower, upper)
 
-bounds = (
-    upper,
-    lower
-)
-
-# Call instance of PSO
+# Crear instancia del optimizador PSO con límites personalizados
 optimizer = ps.single.GlobalBestPSO(
     n_particles=100,
-    dimensions=13, 
+    dimensions=13,
     options=options,
     bounds=bounds,
-    bh_strategy="reflective",
-    )
+    bh_strategy="reflective"
+)
 
-
-
-# Perform optimization
+# Ejecutar la optimización para minimizar la función de esfera
 cost, pos = optimizer.optimize(fx.sphere, iters=1000)
+
+print("Mejor costo encontrado:", cost)
+print("Mejor posición encontrada:", pos)
