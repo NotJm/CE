@@ -7,22 +7,22 @@ from core.Restricciones import Restricciones
 
 # Estrategias de velocidad
 from utils.correcion_de_velocidad import dba
+from utils.constantes import ITERATIONS
 
 # Funciones objetivas
 from problems.cec2006problems import CEC2006_G01, CEC2006_G02, CEC2006_G03
 from problems.cec2020problems import CEC2020_G01
 
 
-ITERATIONS = 25
 
-problema = CEC2020_G01()
+problema = CEC2006_G01()
 
 
 def main():
     for i in range(1, ITERATIONS + 1):
         print(f"Ejecucion: {i}")
         pso = PSO(
-            Limite.wrapping,  # Restriccion de limites
+            Limite.reflex,  # Restriccion de limites
             problema.fitness,  # Problema a evaluar
             problema.SUPERIOR,  # Límites superiores del individuo
             problema.INFERIOR,  # Límites inferiores del individuo
