@@ -66,6 +66,155 @@ class CEC2020_RC01(Problem):
 
 #Problem 02
 
+class CEC2020_RC02(Problem):
+    
+    # WITH BOUNDS:
+    
+    # 0 ≤ x1 ≤ 10, 0 ≤ x2 ≤ 200, 0 ≤ x3 ≤ 100, 0 ≤ x4 ≤ 200,
+    # 1000 ≤ x5 ≤ 2000000, 0 ≤ x6 ≤ 600, 100 ≤ x7 ≤ 600, 100 ≤ x8 ≤ 600,
+    # 100 ≤ x9 ≤ 900.
+    
+    INFERIOR = np.array([10**4,10**4,10**4,0,0,0,100,100,100,100,100])
+    SUPERIOR = np.array([81.9 * 10**4,113.1 * 10**4,205 * 10**4,5.074 * 10**-2,5.074 * 10**-2,5.074 * 10**-2,200,300,300,300,400])          
+    
+    def __init__(self):
+        rest_h = [
+            CEC2020_RC02.CEC2020_RC02_h1,
+            CEC2020_RC02.CEC2020_RC02_h2,
+            CEC2020_RC02.CEC2020_RC02_h3,
+            CEC2020_RC02.CEC2020_RC02_h4,
+            CEC2020_RC02.CEC2020_RC02_h5,
+            CEC2020_RC02.CEC2020_RC02_h6,
+            CEC2020_RC02.CEC2020_RC02_h7,
+            CEC2020_RC02.CEC2020_RC02_h8,
+            CEC2020_RC02.CEC2020_RC02_h9
+        ]
+        super().__init__(ProblemType.CONSTRAINED, CEC2020_RC01.SUPERIOR, CEC2020_RC01.INFERIOR, [],  rest_h)
+    
+    def fitness(self, individuo: np.array) -> float:
+        x = individuo
+        f_x = ( x[0] / 120 * x[3] )**0.6 + ( x[1] / 80 * x[4] )**0.6 + ( x[3] / 40 * x[5] )**0.6
+        return f_x
+    
+    @staticmethod
+    def CEC2020_RC02_h1(x):
+        return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
+    
+    @staticmethod
+    def CEC2020_RC02_h2(x):
+        return x[1] - 10**4 * (x[7] - x[6])  # restriccion 2 de igualdad = 0
+    
+    @staticmethod
+    def CEC2020_RC02_h3(x):
+        return x[2] - 10**4 * (500 - x[7])  # restriccion 3 de igualdad = 0
+    
+    @staticmethod
+    def CEC2020_RC02_h4(x):
+        return x[0] - 10**4 * (300 - x[8])  # restriccion 4 de igualdad = 0
+    
+    @staticmethod
+    def CEC2020_RC02_h5(x):
+        return x[1] - 10**4 * (400 - x[9])  # restriccion 5 de igualdad = 0
+    
+    @staticmethod
+    def CEC2020_RC02_h6(x):
+        return x[3] - 10**4 * (600 - x[10])  # restriccion 6 de igualdad = 0
+    
+    @staticmethod
+    def CEC2020_RC01_h8(x):
+        return x[3] * np.log(x[8] - 100) - x[3] * np.log(300 - x[6]) - x[8] + x[6] + 400 # restriccion 7 de igualdad = 0
+    
+    @staticmethod              
+    def CEC2020_RC01_h7(x):
+        return x[4] * np.log(x[9] - x[6]) - x[4] * np.log(400 - x[7]) - x[9] + x[6] - x[7] + 400 #restriccion 8 de igualdad = 0
+
+    @staticmethod
+    def CEC2020_RC01_h8(x):
+        return x[5] * np.log(x[10] - x[7]) - x[5] * np.log(100) - x[10] + x[7] + 100 # restriccion 9 de igualdad = 0
+
+#********************************************************************************************************************************
+
+#Problem 03
+
+class CEC2020_RC07(Problem):
+    
+    # WITH BOUNDS:
+    
+    # 0 ≤ x1, ..., x20 ≤ 150; 0 ≤ x25, x27, x32, x35, x37, x29 ≤ 30;
+    # 0 ≤ x21, x22, x23, x30, x33, x34, x36, x38, x39, x40, x42, x43, x44, x45, ≤ 1,
+    # 0 ≤ x46, x47, x48 ≤ 1,
+    # 0.85 ≤ x24, x26, x28, x31 ≤ 1
+
+    
+    SUPERIOR = np.array([10,200,100,200,2000000,600,600,600,900])
+    INFERIOR = np.array([0,0,0,0,1000,0,100,100,100])
+
+    def __init__(self):
+        rest_h = [
+            CEC2020_RC07.CEC2020_RC07_h1,
+            CEC2020_RC07.CEC2020_RC07_h2,
+            CEC2020_RC07.CEC2020_RC07_h3,
+            CEC2020_RC07.CEC2020_RC07_h4,
+            CEC2020_RC07.CEC2020_RC07_h5,
+            CEC2020_RC07.CEC2020_RC07_h6,
+            CEC2020_RC07.CEC2020_RC07_h7,
+            CEC2020_RC07.CEC2020_RC07_h8,
+            CEC2020_RC07.CEC2020_RC07_h9,
+            CEC2020_RC07.CEC2020_RC07_h10,
+            CEC2020_RC07.CEC2020_RC07_h11,
+            CEC2020_RC07.CEC2020_RC07_h12,
+            CEC2020_RC07.CEC2020_RC07_h13,
+            CEC2020_RC07.CEC2020_RC07_h14,
+            CEC2020_RC07.CEC2020_RC07_h15,
+            CEC2020_RC07.CEC2020_RC07_h16,
+            CEC2020_RC07.CEC2020_RC07_h17,
+            CEC2020_RC07.CEC2020_RC07_h18,
+            CEC2020_RC07.CEC2020_RC07_h19,
+            CEC2020_RC07.CEC2020_RC07_h20,
+            CEC2020_RC07.CEC2020_RC07_h21,
+            CEC2020_RC07.CEC2020_RC07_h22,
+            CEC2020_RC07.CEC2020_RC07_h23,
+            CEC2020_RC07.CEC2020_RC07_h24,
+            CEC2020_RC07.CEC2020_RC07_h25,
+            CEC2020_RC07.CEC2020_RC07_h26,
+            CEC2020_RC07.CEC2020_RC07_h27,
+            CEC2020_RC07.CEC2020_RC07_h28,
+            CEC2020_RC07.CEC2020_RC07_h29,
+            CEC2020_RC07.CEC2020_RC07_h30,
+            CEC2020_RC07.CEC2020_RC07_h31,
+            CEC2020_RC07.CEC2020_RC07_h32,
+            CEC2020_RC07.CEC2020_RC07_h33,
+            CEC2020_RC07.CEC2020_RC07_h34,
+            CEC2020_RC07.CEC2020_RC07_h35,
+            CEC2020_RC07.CEC2020_RC07_h36,
+            CEC2020_RC07.CEC2020_RC07_h37,
+            CEC2020_RC07.CEC2020_RC07_h38,
+            CEC2020_RC07.CEC2020_RC07_h39,
+        ]
+        super().__init__(ProblemType.CONSTRAINED, CEC2020_RC07.SUPERIOR, CEC2020_RC07.INFERIOR, [],  rest_h)
+
+
+    def fitness(self, individuo: np.array) -> float:
+        
+        x = np.copy(individuo)
+                
+        # Coeficientes de la función
+        c = np.array([
+            [0.23947, 0.758535],
+            [-0.0139904, -0.0661588],
+            [0.00955134, 0.0338147],
+            [0.0077508, 0.0373349],
+            [-0.0057719, 0.00163711],
+            [0.0042656, 0.0286996]
+        ])
+    
+        f_x = (
+                c[0, 0] + (c[1, 0] + c[2, 0] * x[23] + c[3, 0] * x[37] + c[4, 0] * x[52] + c[5, 0] * x[44] + c[5, 0] * x[11]) +
+                c[0, 1] + (c[1, 1] + c[2, 1] * x[25] + c[3, 1] * x[30] + c[4, 1] * x[37] + c[5, 1] * x[38] * x[12])
+            )
+        
+        return f_x
+
 #********************************************************************************************************************************
 
 #Problem 02
