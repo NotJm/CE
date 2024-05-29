@@ -79,17 +79,7 @@ class CEC2020_RC02(Problem):
     SUPERIOR = np.array([81.9 * 10**4,113.1 * 10**4,205 * 10**4,5.074 * 10**-2,5.074 * 10**-2,5.074 * 10**-2,200,300,300,300,400])          
     
     def __init__(self):
-        rest_h = [
-            CEC2020_RC02.CEC2020_RC02_h1,
-            CEC2020_RC02.CEC2020_RC02_h2,
-            CEC2020_RC02.CEC2020_RC02_h3,
-            CEC2020_RC02.CEC2020_RC02_h4,
-            CEC2020_RC02.CEC2020_RC02_h5,
-            CEC2020_RC02.CEC2020_RC02_h6,
-            CEC2020_RC02.CEC2020_RC02_h7,
-            CEC2020_RC02.CEC2020_RC02_h8,
-            CEC2020_RC02.CEC2020_RC02_h9
-        ]
+
         super().__init__(ProblemType.CONSTRAINED, self.SUPERIOR, self.INFERIOR, [],  rest_h)
     
     def fitness(self, individuo: np.array) -> float:
