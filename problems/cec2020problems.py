@@ -15,14 +15,14 @@ class CEC2020_RC01(Problem):
 
     def __init__(self):
         rest_h = [
-            CEC2020_RC01.CEC2020_RC01_h1,
-            CEC2020_RC01.CEC2020_RC01_h2,
-            CEC2020_RC01.CEC2020_RC01_h3,
-            CEC2020_RC01.CEC2020_RC01_h4,
-            CEC2020_RC01.CEC2020_RC01_h5,
-            CEC2020_RC01.CEC2020_RC01_h6,
-            CEC2020_RC01.CEC2020_RC01_h7,
-            CEC2020_RC01.CEC2020_RC01_h8,
+            self.CEC2020_RC01_h1,
+            self.CEC2020_RC01_h2,
+            self.CEC2020_RC01_h3,
+            self.CEC2020_RC01_h4,
+            self.CEC2020_RC01_h5,
+            self.CEC2020_RC01_h6,
+            self.CEC2020_RC01_h7,
+            self.CEC2020_RC01_h8,
         ]
         super().__init__(ProblemType.CONSTRAINED, self.SUPERIOR, self.INFERIOR, [],  rest_h)
     
@@ -80,15 +80,15 @@ class CEC2020_RC02(Problem):
     
     def __init__(self):
         rest_h = [
-            CEC2020_RC02.CEC2020_RC02_h1,
-            CEC2020_RC02.CEC2020_RC02_h2,
-            CEC2020_RC02.CEC2020_RC02_h3,
-            CEC2020_RC02.CEC2020_RC02_h4,
-            CEC2020_RC02.CEC2020_RC02_h5,
-            CEC2020_RC02.CEC2020_RC02_h6,
-            CEC2020_RC02.CEC2020_RC02_h7,
-            CEC2020_RC02.CEC2020_RC02_h8,
-            CEC2020_RC02.CEC2020_RC02_h9
+            self.CEC2020_RC02_h1,
+            self.CEC2020_RC02_h2,
+            self.CEC2020_RC02_h3,
+            self.CEC2020_RC02_h4,
+            self.CEC2020_RC02_h5,
+            self.CEC2020_RC02_h6,
+            self.CEC2020_RC02_h7,
+            self.CEC2020_RC02_h8,
+            self.CEC2020_RC02_h9
         ]
         super().__init__(ProblemType.CONSTRAINED, self.SUPERIOR, self.INFERIOR, [],  rest_h)
     
@@ -152,45 +152,7 @@ class CEC2020_RC07(Problem):
 
     def __init__(self):
         rest_h = [
-            CEC2020_RC07.CEC2020_RC07_h1,
-            CEC2020_RC07.CEC2020_RC07_h2,
-            CEC2020_RC07.CEC2020_RC07_h3,
-            CEC2020_RC07.CEC2020_RC07_h4,
-            CEC2020_RC07.CEC2020_RC07_h5,
-            CEC2020_RC07.CEC2020_RC07_h6,
-            CEC2020_RC07.CEC2020_RC07_h7,
-            CEC2020_RC07.CEC2020_RC07_h8,
-            CEC2020_RC07.CEC2020_RC07_h9,
-            CEC2020_RC07.CEC2020_RC07_h10,
-            CEC2020_RC07.CEC2020_RC07_h11,
-            CEC2020_RC07.CEC2020_RC07_h12,
-            CEC2020_RC07.CEC2020_RC07_h13,
-            CEC2020_RC07.CEC2020_RC07_h14,
-            CEC2020_RC07.CEC2020_RC07_h15,
-            CEC2020_RC07.CEC2020_RC07_h16,
-            CEC2020_RC07.CEC2020_RC07_h17,
-            CEC2020_RC07.CEC2020_RC07_h18,
-            CEC2020_RC07.CEC2020_RC07_h19,
-            CEC2020_RC07.CEC2020_RC07_h20,
-            CEC2020_RC07.CEC2020_RC07_h21,
-            CEC2020_RC07.CEC2020_RC07_h22,
-            CEC2020_RC07.CEC2020_RC07_h23,
-            CEC2020_RC07.CEC2020_RC07_h24,
-            CEC2020_RC07.CEC2020_RC07_h25,
-            CEC2020_RC07.CEC2020_RC07_h26,
-            CEC2020_RC07.CEC2020_RC07_h27,
-            CEC2020_RC07.CEC2020_RC07_h28,
-            CEC2020_RC07.CEC2020_RC07_h29,
-            CEC2020_RC07.CEC2020_RC07_h30,
-            CEC2020_RC07.CEC2020_RC07_h31,
-            CEC2020_RC07.CEC2020_RC07_h32,
-            CEC2020_RC07.CEC2020_RC07_h33,
-            CEC2020_RC07.CEC2020_RC07_h34,
-            CEC2020_RC07.CEC2020_RC07_h35,
-            CEC2020_RC07.CEC2020_RC07_h36,
-            CEC2020_RC07.CEC2020_RC07_h37,
-            CEC2020_RC07.CEC2020_RC07_h38,
-            CEC2020_RC07.CEC2020_RC07_h39,
+            
         ]
         super().__init__(ProblemType.CONSTRAINED, self.SUPERIOR, self.INFERIOR, [],  rest_h)
 

@@ -16,17 +16,14 @@ from problems.cec2006problems import (
     CEC2006_G03,
     CEC2006_G04,
     CEC2006_G05,
-    CEC2006_G06,
-    CEC2006_G07,
-    CEC2006_G08, 
-    CEC2006_G09
 )
-from pyautogui import GUI
 from problems.cec2020problems import CEC2020_RC01
 
+from problems.cec2022problems import CEC2022_ZakharovF, CEC2022_RosenbrockF, SUPERIOR, INFERIOR
 
 
-problema = CEC2006_G09()
+
+problema = CEC2006_G01()
 
 
 def main():
@@ -44,6 +41,7 @@ def main():
         )
         # Optimizacion
         pso.optimizar()
+        pso.reporte()
         
         # de = DE(
         #     Limite.reflex,

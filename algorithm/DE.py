@@ -66,7 +66,7 @@ class DE(Algoritmo):
             self.noViolaciones[index] = total_de_violaciones
     
     # Operador de mutacion        
-    def mutacion(self, idx):
+    def mutacionDeIndividuo(self, idx):
         # Crear una lista de indices excluyendo a idx esto para no seleccionar idx
         index = [i for i in range(SIZE_POBLATION) if i != idx]
         # Selecciona tres individuos para mutar
@@ -77,7 +77,7 @@ class DE(Algoritmo):
         return mutado
 
     # Operador de cruzar
-    def cruze(self, target, mutante):
+    def cruzeDeIndividuos(self, target, mutante):
         # Generar puntos de cruze
         punto_de_cruze = np.random.rand(len(target)) < self.CR
         # Garantizar al menos un punto de cruze
@@ -89,7 +89,7 @@ class DE(Algoritmo):
         return trial
     
     # Operador de seleccion
-    def seleccionar(self, idx, trial):
+    def seleccionDeIndividuos(self, idx, trial):
         # Se genera un individuo de prueba
         individuo_de_prueba = self.inferior + trial * (self.superior - self.inferior)
         # Se obtiene su fitness

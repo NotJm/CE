@@ -1,10 +1,10 @@
 from utils.constantes import SIZE_POBLATION, GENERATIONS
 from core.Restricciones import Restricciones
 from core.Algoritmo import Algoritmo
+from utils.logging import configuracionDeLoggin
 from tqdm import tqdm
 import numpy as np
 import random as rd
-
 
 class PSO(Algoritmo):
     # Particulas
@@ -50,7 +50,9 @@ class PSO(Algoritmo):
         g_funcs=[],  # Lista de funciones de desigualdad <= 0
         h_funcs=[],  # Lista de funciones de igualdad == 0
     ):
-
+        # Configuracion de loggin 
+        self.logging = configuracionDeLoggin("pso_reporte.log")
+                
         # Funcion limite a ocupar
         self.limite = limite
         # Funcion aptitud que se va evaluar
@@ -80,10 +82,14 @@ class PSO(Algoritmo):
         self.pbestViolaciones = np.copy(self.noViolaciones)
         # Obtener el mejor de la generacion 0
         self.obtenerGbestPoblacion0()
+        
+     
+        
 
     # Calculo de la aptitud (fitness) para cada particula (individuo)
     # Y Calcular la suma de violaciones que tuvo la particula
     def calcularFitnessYSumaDeViolaciones(self):
+        
         # Calculo del fitness para cada particula
         for index, particula in enumerate(self.particulas):
             # Obtener el fitness
@@ -94,7 +100,7 @@ class PSO(Algoritmo):
             total_de_violaciones = Restricciones.suma_violaciones(
                 self.g_funcs, self.h_funcs, particula
             )
-
+            
             # Guardar violacioens
             self.noViolaciones[index] = total_de_violaciones
 
@@ -168,6 +174,12 @@ class PSO(Algoritmo):
                 self.velocidad[index] = self.act_vel(self.velocidad[index])
 
     def reporte(self):
+        # * Mensaje de Log para el reporte
+        self.logging.debug("SOLUCION OPTIMA:")
+        self.logging.debug(f"Mejor posicion de la particula:{self.gbestParticula}")
+        self.logging.debug(f"Mejor fitness de la particula:{self.gbestAptitud}")
+        self.logging.debug(f"Numero de Infracciones: {self.gbestViolacion}")
+        
         print("================================")
         print("SOLUCION OPTIMA")
         print(f"Mejor posicion de la particula: {self.gbestParticula}")
@@ -193,4 +205,3 @@ class PSO(Algoritmo):
                 self.actualizarPosicionGbestDePoblacion()
                 bar.update(1)
                 generacion += 1
-        self.reporte()
