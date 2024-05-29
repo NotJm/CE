@@ -9,17 +9,15 @@ class CEC2006_G01(Problem):
 
     def __init__(self):
         rest_g = [
-            CEC2006_G01.cec2006_g01_g1,
-            CEC2006_G01.cec2006_g01_g2,
-            CEC2006_G01.cec2006_g01_g3,
-            CEC2006_G01.cec2006_g01_g4,
-            CEC2006_G01.cec2006_g01_g5,
-            CEC2006_G01.cec2006_g01_g6,
-            CEC2006_G01.cec2006_g01_g7,
-            CEC2006_G01.cec2006_g01_g8,
-            CEC2006_G01.cec2006_g01_g9
+            self.cec2006_g01_g1,self.cec2006_g01_g2,self.cec2006_g01_g3,
+            self.cec2006_g01_g4,self.cec2006_g01_g5,self.cec2006_g01_g6,
+            self.cec2006_g01_g7,self.cec2006_g01_g8,self.cec2006_g01_g9
         ]
-        super().__init__(ProblemType.CONSTRAINED, CEC2006_G01.SUPERIOR, CEC2006_G01.INFERIOR, rest_g, [])
+        super().__init__(
+            ProblemType.CONSTRAINED, #TIPO DE PROBLEMA
+            self.SUPERIOR,self.INFERIOR, #LÍMITES
+            rest_g,[] #RESTRICCIONES
+        )
     
     def fitness(self, individuo: np.array) -> float:
         sum1 = np.sum(individuo[0:4])
@@ -79,16 +77,14 @@ class CEC2006_G02(Problem):
 
     def __init__(self):
         rest_g = [
-            CEC2006_G02.cec2006_g02_g1,
-            CEC2006_G02.cec2006_g02_g2,
+            self.cec2006_g02_g1,
+            self.cec2006_g02_g2,
         ]
         super().__init__(
-            ProblemType.CONSTRAINED,
-            CEC2006_G02.SUPERIOR,
-            CEC2006_G02.INFERIOR,
-            rest_g,
-            []
-            )
+            ProblemType.CONSTRAINED, #TIPO DE PROBLEMA
+            self.SUPERIOR,self.INFERIOR, #LÍMITES
+            rest_g,[] #RESTRICCIONES
+        )
 
     def fitness(self, individuo: np.array) -> float:
         sum_cos4 = np.sum(np.cos(individuo)**4)
@@ -123,15 +119,13 @@ class CEC2006_G03(Problem):
 
     def __init__(self):
         rest_h = [
-            CEC2006_G03.cec2006_g03_h1
+            self.cec2006_g03_h1
         ]
         super().__init__(
-            ProblemType.CONSTRAINED,
-            CEC2006_G02.SUPERIOR,
-            CEC2006_G02.INFERIOR,
-            [],
-            rest_h,
-            )
+            ProblemType.CONSTRAINED, #TIPO DE PROBLEMA
+            self.SUPERIOR,self.INFERIOR, #LÍMITES
+            [],rest_h #RESTRICCIONES
+        )
 
     def fitness(self, individuo: np.array) -> float:
         n = len(individuo)
@@ -150,27 +144,32 @@ class CEC2006_G03(Problem):
 
 #Problem 04
 
-class CEC2006_G04:
+class CEC2006_G04(Problem):
     
-    SUPERIOR = [102, 45, 45, 45, 45]
-    INFERIOR = [78, 33, 27, 27, 27]
+    SUPERIOR = np.array([102, 45, 45, 45, 45])
+    INFERIOR = np.array([78, 33, 27, 27, 27])
 
     def __init__(self):
         rest_g = [
-            CEC2006_G04.cec2006_g04_g1,
-            CEC2006_G04.cec2006_g04_g2,
-            CEC2006_G04.cec2006_g04_g3,
-            CEC2006_G04.cec2006_g04_g4,
-            CEC2006_G04.cec2006_g04_g5,
-            CEC2006_G04.cec2006_g04_g6
+            self.cec2006_g04_g2,
+            self.cec2006_g04_g1,
+            self.cec2006_g04_g3,
+            self.cec2006_g04_g4,
+            self.cec2006_g04_g5,
+            self.cec2006_g04_g6
         ]
-        super().__init__(ProblemType.UNCONSTRAINED, CEC2006_G03.SUPERIOR, CEC2006_G03.INFERIOR, rest_g, [])
+        super().__init__(
+            ProblemType.CONSTRAINED, #TIPO DE PROBLEMA
+            self.SUPERIOR,self.INFERIOR, #LÍMITES
+            rest_g,[] #RESTRICCIONES
+        )
 
     def fitness(self, individuo: np.array) -> float:
-        x1, x3, x5 = individuo[0], individuo[2], individuo[4]
-        f_x = 5.3578547 * x3**2 + 0.8356891 * x1 * x5 + 37.293239 * x1 - 40792.141
+        x = individuo
+        f_x = 5.3578547 * x[2]**2 + 0.8356891 * x[0] * x[4] + 37.293239 * x[0] - 40792.141
         return f_x
     
+    @staticmethod
     def cec2006_g04_g1(x): # restriccion 1 de desigualdad <= 0
         return 85.334407 + 0.0056858 * x[1] * x[4] + 0.0006262 * x[0] * x[3] - 0.0022053 * x[2] * x[4] - 92
 
@@ -201,12 +200,33 @@ class CEC2006_G04:
 
 #Problem 05
 
-class CEC2006_G05:
+class CEC2006_G05(Problem):
+    
+    # WITH BOUNDS:
+    # 0 ≤ x1 ≤ 1200, 0 ≤ x2 ≤ 1200, −0.55 ≤ x3 ≤ 0.55 y −0.55 ≤ x4 ≤ 0.55.
+        
+    SUPERIOR = np.array([1200, 1200, 0.55, 0.55])
+    INFERIOR = np.array([0, 0, -0.55, -0.55])
 
-    @staticmethod
-    def cec2006_g05_aptitud(individuo:np.array): 
-        x1, x2 = individuo[0], individuo[1]
-        f_x = 3 * x1 + 0.000001* x1**3 + 2* x2 + (0.000002/3) * x2**3
+    def __init__(self):
+        rest_g = [
+            self.cec2006_g05_g1,
+            self.cec2006_g05_g2,
+        ]
+        rest_h = [
+            self.cec2006_g05_h1,
+            self.cec2006_g05_h2,
+            self.cec2006_g05_h3
+        ]
+        super().__init__(
+            ProblemType.CONSTRAINED, #TIPO DE PROBLEMA
+            self.SUPERIOR,self.INFERIOR, #LÍMITES
+            rest_g,rest_h #RESTRICCIONES
+        )
+
+    def fitness(self, individuo:np.array): 
+        x = individuo
+        f_x = 3 * x[0] + 0.000001* x[0]**3 + 2* x[1] + (0.000002/3) * x[1]**3
         return f_x
 
     @staticmethod
@@ -218,30 +238,43 @@ class CEC2006_G05:
         return -x[2] + x[3] - 0.55
     
     @staticmethod
-    def cec2006_g05_h3(x): # restriccion 3 de igualdad = 0
+    def cec2006_g05_h1(x): # restriccion 3 de igualdad = 0
         return 1000 * np.sin(-x[2] - 0.25) + 1000 * np.sin(-x[3] - 0.25) + 894.8 - x[0]
     
     @staticmethod
-    def cec2006_g05_h4(x): # restriccion 4 de igualdad = 0
+    def cec2006_g05_h2(x): # restriccion 4 de igualdad = 0
         return 1000 * np.sin(x[2] - 0.25) + 1000 * np.sin(x[2] - x[3] - 0.25) + 894.8 - x[1]
     
     @staticmethod
-    def cec2006_g05_h5(x): # restriccion 5 de igualdad = 0
+    def cec2006_g05_h3(x): # restriccion 5 de igualdad = 0
         return 1000 * np.sin(x[3] - 0.25) + 1000 * np.sin(x[3] - x[2] - 0.25) + 1294.8
-
-
-#Notas: donde 0 ≤ x1 ≤ 1200, 0 ≤ x2 ≤ 1200, −0.55 ≤ x3 ≤ 0.55 y −0.55 ≤ x4 ≤ 0.55.
 
 
 #********************************************************************************************************************************
 
 #Problem 06
 class CEC2006_G06:
+    
+    # WITH BOUNDS:
+    # 13 ≤ x1 ≤ 100 y 0 ≤ x2 ≤ 100
+        
+    SUPERIOR = np.array([100, 100])
+    INFERIOR = np.array([13, 0])
 
-    @staticmethod
-    def cec2006_g06_aptitud(individuo:np.array): 
-        x1, x2 = individuo[0], individuo[1]
-        f_x = (x1 -10)**3 + (x2-20)**3
+    def __init__(self):
+        rest_g = [
+            self.cec2006_g06_g1,
+            self.cec2006_g06_g2,
+        ]
+        super().__init__(
+            ProblemType.CONSTRAINED, #TIPO DE PROBLEMA
+            self.SUPERIOR,self.INFERIOR, #LÍMITES
+            rest_g, [] #RESTRICCIONES
+        )
+    
+    def fitness(self, individuo:np.array): 
+        x = individuo
+        f_x = (x[0] -10)**3 + (x[1]-20)**3
         return f_x
     
     @staticmethod
@@ -251,9 +284,6 @@ class CEC2006_G06:
     @staticmethod
     def cec2006_g06_g2(x): # restriccion 2 de desigualdad <= 0
         return (x[0] - 6)**2 + (x[1] - 5)**2 - 82.81
-
-#Notas: donde 13 ≤ x1 ≤ 100 y 0 ≤ x2 ≤ 100
-
 
 #********************************************************************************************************************************
 

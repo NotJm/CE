@@ -11,11 +11,13 @@ from utils.constantes import ITERATIONS
 
 # Funciones objetivas
 from problems.cec2006problems import CEC2006_G01, CEC2006_G02, CEC2006_G03
+from problems.cec2006problems import CEC2006_G01, CEC2006_G02, CEC2006_G03, CEC2006_G04, CEC2006_G05, CEC2006_G06, CEC2006_G07, CEC2006_G08, CEC2006_G09
+
 from problems.cec2020problems import CEC2020_RC01
 
 
 
-problema = CEC2006_G01()
+problema = CEC2006_G02()
 
 
 def main():
