@@ -1,4 +1,4 @@
-from problems.cec2006problems import CEC2006_G01
+from problems.cec2006problems import CEC2006_G01, CEC2006_G02
 from core.Restricciones import Restricciones
 from pyswarms.utils.plotters import plot_cost_history
 from pyswarms.utils.functions import single_obj as fx
@@ -9,7 +9,7 @@ import pyswarms as ps
 
 problema = CEC2006_G01()
 
-bounds = (problema.SUPERIOR, problema.INFERIOR)
+bounds = (problema.INFERIOR, problema.SUPERIOR)
 
 options = {'c1': 1.4944, 'c2': 1.4944, 'w': 0.95}
 
@@ -25,3 +25,9 @@ optimizer = ps.single.GlobalBestPSO(
 )
 
 fitness, pos = optimizer.optimize(problema.fitness, iters=25)
+
+violaciones = Restricciones.suma_violaciones(problema.rest_g, problema.rest_h, pos)
+
+print("Mejor poscion de la particula:", pos)
+print("Mejor Fitness:", fitness)
+print("Infracciones:", violaciones)
