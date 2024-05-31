@@ -73,7 +73,7 @@ class CEC2006_G01(Problem):
 
 class CEC2006_G02(Problem):
     SUPERIOR = np.array([10] * 20)
-    INFERIOR = [0] * 20
+    INFERIOR = np.array([0] * 20)
 
     def __init__(self):
         rest_g = [
