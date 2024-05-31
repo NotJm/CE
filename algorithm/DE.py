@@ -72,7 +72,7 @@ class DE(Algoritmo):
         # Selecciona tres individuos para mutar
         r1, r2, r3 = self.poblacion[np.random.choice(index, 3, replace=False)]
         # Genera el individuo mutado
-        mutado = np.clip(r1 + self.F * (r2 - r3), 0, 1)
+        mutado = r1 + self.F * (r2 - r3)
         # Regresar individuo mutado
         return mutado
 
@@ -110,7 +110,8 @@ class DE(Algoritmo):
             return True
         # Regresar falso
         return False
-    
+
+
     def reporte(self):
         best_idx = np.argmin(self.fitness)
         
@@ -126,9 +127,9 @@ class DE(Algoritmo):
         for _ in tqdm(range(GENERATIONS), desc="Evolucionando"):
             for i in range(SIZE_POBLATION):
                 objetivo = self.poblacion[i]
-                mutante = self.mutacion(i)
-                prueba = self.cruze(objetivo, mutante)
+                mutante = self.mutacionDeIndividuo(i)
+                prueba = self.cruzeDeIndividuos(objetivo, mutante)
                 self.limite(self.superior, self.inferior, prueba)
-                self.seleccionar(i, prueba)
+                self.seleccionDeIndividuos(i, prueba)
         
         self.reporte()

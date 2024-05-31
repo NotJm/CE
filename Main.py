@@ -29,30 +29,30 @@ problema = CEC2006_G01()
 def main():
     for i in range(1, ITERATIONS + 1):
         print(f"Ejecucion: {i}")
-        pso = PSO(
-            Limite.reflex,  # Restriccion de limites
-            problema.fitness,  # Problema a evaluar
-            problema.SUPERIOR,  # Límites superiores del individuo
-            problema.INFERIOR,  # Límites inferiores del individuo
-            Restricciones.aEsMejorQueB_deb,  # Restriccion de problema
-            dba,  # Una estrategia de actualizacion de velocidad,
-            problema.rest_g,  # Son restricciones de desigualdad para el problema,
-            problema.rest_h,  # Son restricciones de igualdad para el problema,
-        )
-        # Optimizacion
-        pso.optimizar()
-        pso.reporte()
-        
-        # de = DE(
-        #     Limite.reflex,
-        #     problema.fitness,
-        #     problema.SUPERIOR,
-        #     problema.INFERIOR,
-        #     Restricciones.aEsMejorQueB_deb,
-        #     problema.rest_g,
-        #     problema.rest_h
+        # pso = PSO(
+        #     Limite.reflex,  # Restriccion de limites
+        #     problema.fitness,  # Problema a evaluar
+        #     problema.SUPERIOR,  # Límites superiores del individuo
+        #     problema.INFERIOR,  # Límites inferiores del individuo
+        #     Restricciones.aEsMejorQueB_deb,  # Restriccion de problema
+        #     dba,  # Una estrategia de actualizacion de velocidad,
+        #     problema.rest_g,  # Son restricciones de desigualdad para el problema,
+        #     problema.rest_h,  # Son restricciones de igualdad para el problema,
         # )
-        # de.run()   
+        # # Optimizacion
+        # pso.optimizar()
+        # pso.reporte()
+        
+        de = DE(
+            Limite.reflex,
+            problema.fitness,
+            problema.SUPERIOR,
+            problema.INFERIOR,
+            Restricciones.aEsMejorQueB_deb,
+            problema.rest_g,
+            problema.rest_h
+        )
+        de.run()   
 
 
 if __name__ == "__main__":
