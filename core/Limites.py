@@ -48,29 +48,6 @@ class Limite:
 
         return np.array(individuo_corregido)
 
-    @staticmethod
-    # Metodo evolutionary para manejar restricciones de limites dentro de los valores de un individuo
-    def evolutionary(
-        superior: list, inferior: list, individuo: np.array, bestInd: np.array
-    ) -> np.array:
-
-        alpha = rd.random()
-        beta = rd.random()
-
-        individuo_corregido = []
-
-        for sup, inf, ind, best in zip(superior, inferior, individuo, bestInd):
-            if ind >= inf and ind <= sup:
-                individuo_corregido.append(ind)
-            elif ind < inf:
-                new_component = alpha * inf + (1 - alpha) * best
-                individuo_corregido.append(new_component)
-            else:
-                new_component = beta * sup + (1 - beta) * best
-                individuo_corregido.append(new_component)
-
-        return np.array(individuo_corregido)
-
     # Metodo wrapping para maenjar restricciones de limites dentro de los valores de un individuo
     def wrapping(superior, inferior, individuo) -> np.array:
         range_width = abs(superior - inferior)
