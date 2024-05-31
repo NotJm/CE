@@ -75,8 +75,14 @@ class CEC2020_RC02(Problem):
     # 100 ≤ x11 ≤ 400.
 
     
-    INFERIOR = np.array([10**4,10**4,10**4,0,0,0,100,100,100,100,100])
-    SUPERIOR = np.array([81.9 * 10**4,113.1 * 10**4,205 * 10**4,5.074 * 10**-2,5.074 * 10**-2,5.074 * 10**-2,200,300,300,300,400])          
+    INFERIOR = np.array([
+        10**4,10**4,10**4,0,0,
+        0,100,100,100,100,100
+    ])
+    SUPERIOR = np.array([
+        81.9 * 10**4,113.1 * 10**4,205 * 10**4,5.074 * 10**-2,5.074 * 10**-2,
+        5.074 * 10**-2,200,300,300,300,400
+    ]) 
     
     def __init__(self):
         rest_h = [
@@ -147,12 +153,30 @@ class CEC2020_RC07(Problem):
     # 0.85 ≤ x24, x26, x28, x31 ≤ 1
 
     
-    SUPERIOR = np.array([10,200,100,200,2000000,600,600,600,900])
-    INFERIOR = np.array([0,0,0,0,1000,0,100,100,100])
+    SUPERIOR = np.array([
+        150, 150, 150, 150, 150, 150, 150, 150, 150, 150,
+        150, 150, 150, 150, 150, 150, 150, 150, 150, 150,
+        1, 1, 1, 1, 30, 1, 30,
+    ])
+    INFERIOR = np.array([
+        # 0 ≤ x1, ..., x20 ≤ 150
+        0, 0, 0,    0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0,    0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0.85, 0, 0.85, 0, 
+    ])
 
     def __init__(self):
         rest_h = [
-            
+            self.CEC2020_RC07_h1, self.CEC2020_RC07_h2, self.CEC2020_RC07_h3, self.CEC2020_RC07_h4,
+            self.CEC2020_RC07_h5, self.CEC2020_RC07_h6, self.CEC2020_RC07_h7, self.CEC2020_RC07_h8,
+            self.CEC2020_RC07_h9, self.CEC2020_RC07_h10, self.CEC2020_RC07_h11, self.CEC2020_RC07_h12,
+            self.CEC2020_RC07_h13, self.CEC2020_RC07_h14, self.CEC2020_RC07_h15, self.CEC2020_RC07_h16,
+            self.CEC2020_RC07_h17, self.CEC2020_RC07_h18, self.CEC2020_RC07_h19, self.CEC2020_RC07_h20,
+            self.CEC2020_RC07_h21, self.CEC2020_RC07_h22, self.CEC2020_RC07_h23, self.CEC2020_RC07_h24,
+            self.CEC2020_RC07_h25, self.CEC2020_RC07_h26, self.CEC2020_RC07_h27, self.CEC2020_RC07_h28,
+            self.CEC2020_RC07_h29, self.CEC2020_RC07_h30, self.CEC2020_RC07_h31, self.CEC2020_RC07_h32,
+            self.CEC2020_RC07_h33, self.CEC2020_RC07_h34, self.CEC2020_RC07_h35, self.CEC2020_RC07_h36,
+            self.CEC2020_RC07_h37, self.CEC2020_RC07_h38, self.CEC2020_RC07_h39
         ]
         super().__init__(ProblemType.CONSTRAINED, self.SUPERIOR, self.INFERIOR, [],  rest_h)
 
@@ -179,160 +203,161 @@ class CEC2020_RC07(Problem):
         return f_x
     
     @staticmethod
-    def CEC2020_RC02_h1(x):
+    def CEC2020_RC07_h1(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h2(x):
+    def CEC2020_RC07_h2(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h3(x):
+    def CEC2020_RC07_h3(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h4(x):
+    def CEC2020_RC07_h4(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h5(x):
+    def CEC2020_RC07_h5(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h6(x):
+    def CEC2020_RC07_h6(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h7(x):
+    def CEC2020_RC07_h7(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h8(x):
+    def CEC2020_RC07_h8(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h9(x):
+    def CEC2020_RC07_h9(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h10(x):
+    def CEC2020_RC07_h10(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h11(x):
+    def CEC2020_RC07_h11(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h12(x):
+    def CEC2020_RC07_h12(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h13(x):
+    def CEC2020_RC07_h13(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h14(x):
+    def CEC2020_RC07_h14(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h15(x):
+    def CEC2020_RC07_h15(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h16(x):
+    def CEC2020_RC07_h16(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h17(x):
+    def CEC2020_RC07_h17(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h18(x):
+    def CEC2020_RC07_h18(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h19(x):
+    def CEC2020_RC07_h19(x):
+        return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
+
+    @staticmethod
+    def CEC2020_RC07_h20(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h20(x):
+    def CEC2020_RC07_h21(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h21(x):
+    def CEC2020_RC07_h22(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h22(x):
+    def CEC2020_RC07_h23(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h23(x):
+    def CEC2020_RC07_h24(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h24(x):
+    def CEC2020_RC07_h25(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h25(x):
+    def CEC2020_RC07_h26(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h26(x):
+    def CEC2020_RC07_h27(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h27(x):
+    def CEC2020_RC07_h28(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h28(x):
+    def CEC2020_RC07_h29(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h29(x):
+    def CEC2020_RC07_h30(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h30(x):
+    def CEC2020_RC07_h31(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h31(x):
+    def CEC2020_RC07_h32(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h32(x):
+    def CEC2020_RC07_h33(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h33(x):
+    def CEC2020_RC07_h34(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h34(x):
+    def CEC2020_RC07_h35(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h35(x):
+    def CEC2020_RC07_h36(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h36(x):
+    def CEC2020_RC07_h37(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h37(x):
+    def CEC2020_RC07_h38(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
     @staticmethod
-    def CEC2020_RC02_h38(x):
+    def CEC2020_RC07_h39(x):
         return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
     
-    @staticmethod
-    def CEC2020_RC02_h39(x):
-        return x[0] - 10**4 * (x[6] - 100)  # restriccion 1 de igualdad = 0
 #********************************************************************************************************************************
 
 #Problem 02
