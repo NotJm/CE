@@ -67,26 +67,45 @@ class DE(Algoritmo):
     
     # Operador de mutacion        
     def mutacionDeIndividuo(self, idx):
+<<<<<<< HEAD
         # Crear una lista de indices excluyendo a idx esto para no seleccionar idx
         index = [i for i in range(SIZE_POBLATION) if i != idx]
         # Selecciona tres individuos para mutar
         r1, r2, r3 = self.poblacion[np.random.choice(index, 3, replace=False)]
         # Genera el individuo mutado
         mutado = r1 + self.F * (r2 - r3)
+=======
+         # Crear una lista de índices excluyendo a idx
+        indices = np.arange(len(self.poblacion))
+        indices = np.delete(indices, idx)
+        
+        # Selecciona tres índices al azar
+        r1, r2, r3 = np.random.choice(indices, 3, replace=False)
+        
+        # Selecciona los individuos correspondientes
+        X_r1 = self.poblacion[r1]
+        X_r2 = self.poblacion[r2]
+        X_r3 = self.poblacion[r3]
+        
+        # Genera el individuo mutado siguiendo la ecuación correcta
+        mutado = X_r1 + self.F * (X_r2 - X_r3)
+        
+>>>>>>> d3d07c8294c698a6d1d7cb55a28f39a7a5392d3b
         # Regresar individuo mutado
         return mutado
 
     # Operador de cruzar
     def cruzeDeIndividuos(self, target, mutante):
-        # Generar puntos de cruze
-        punto_de_cruze = np.random.rand(len(target)) < self.CR
-        # Garantizar al menos un punto de cruze
-        if not np.any(punto_de_cruze):
-            punto_de_cruze[np.random.randint(0, len(target))] = True
-        # Crea el vector de prueba
-        trial = np.where(punto_de_cruze, mutante, target)
-        # Devolver vector de prueba
+        D = len(target)
+        trial = np.copy(target)
+        j_rand = np.random.randint(D)
+
+        for j in range(D):
+            if np.random.rand() < self.CR or j == j_rand:
+                trial[j] = mutante[j]
+
         return trial
+
     
     # Operador de seleccion
     def seleccionDeIndividuos(self, idx, trial):

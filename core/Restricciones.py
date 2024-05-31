@@ -22,7 +22,7 @@ class Restricciones:
                 return True
             else:
                 return False
-         # Regla 3: Entre dos soluciones infactibles se elige el menor valor en la funcion objectivo
+        # Regla 3: Entre dos soluciones infactibles se elige el menor valor en la funcion objectivo
         elif a_violaciones != 0 and b_violaciones != 0:
             if a_violaciones <= b_violaciones:
                 return True
