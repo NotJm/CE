@@ -181,6 +181,7 @@ class PSO(Algoritmo):
         self.logging.debug(f"Numero de Infracciones: {self.gbestViolacion}")
         
         print("================================")
+        print("Reporte PSO")
         print("SOLUCION OPTIMA")
         print(f"Mejor posicion de la particula: {self.gbestParticula}")
         print(f"Mejor fitness de la particula: {self.gbestAptitud}")

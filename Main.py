@@ -28,7 +28,7 @@ from problems.cec2022problems import CEC2022_ZakharovF, CEC2022_RosenbrockF, SUP
 
 
 
-problema = CEC2006_G01()
+problema = CEC2020_RC01()
 
 
 def main():
@@ -49,16 +49,16 @@ def main():
         pso.reporte()
         mejor_solucion_csv(pso.gbestParticula,pso.gbestAptitud, pso.gbestViolacion,"Prueba_Wrapping.csv")
         
-            # de = DE(
-            #     Limite.reflex,
-            #     problema.fitness,
-            #     problema.SUPERIOR,
-            #     problema.INFERIOR,
-            #     Restricciones.aEsMejorQueB_deb,
-            #     problema.rest_g,
-            #     problema.rest_h
-            # )
-            # de.run()   
+        de = DE(
+            Limite.reflex,
+            problema.fitness,
+            problema.SUPERIOR,
+            problema.INFERIOR,
+            Restricciones.aEsMejorQueB_deb,
+            problema.rest_g,
+            problema.rest_h
+        )
+        de.run()   
 
 
 if __name__ == "__main__":
