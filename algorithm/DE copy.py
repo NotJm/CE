@@ -13,15 +13,8 @@ class DE(Algoritmo):
     # Numero de infracciones que ocasiono un individuo de la poblacion
     noViolaciones = np.zeros(SIZE_POBLATION)
     
-    # Mejor aptitud de la particula
-    gbestFitness = 0
-    # Mejor violacion de la particula <= 0
-    gbestViolacion = 0
-    # Mejor particula de la generacion
-    gbestIndividuo = []
-    
     # Factor de escalado
-    F = 0.7
+    F = 0.5
     # Tasa de recombinacion
     CR = 0.9
 
@@ -66,14 +59,20 @@ class DE(Algoritmo):
             # Guardar fitness de la poblacion
             self.fitness[index] = fitness
             # Obtener la suma de violaciones
-
             total_de_violaciones = Restricciones.suma_violaciones(
                 self.g_funcs, self.h_funcs, individuo
             )
+            
             self.noViolaciones[index] = total_de_violaciones
     
     # Operador de mutacion        
     def mutacionDeIndividuo(self, idx):
+        # Crear una lista de indices excluyendo a idx esto para no seleccionar idx
+        index = [i for i in range(SIZE_POBLATION) if i != idx]
+        # Selecciona tres individuos para mutar
+        r1, r2, r3 = self.poblacion[np.random.choice(index, 3, replace=False)]
+        # Genera el individuo mutado
+        mutado = r1 + self.F * (r2 - r3)
          # Crear una lista de índices excluyendo a idx
         indices = np.arange(len(self.poblacion))
         indices = np.delete(indices, idx)
@@ -115,14 +114,7 @@ class DE(Algoritmo):
         
         
         # Se compara con los fitness 
-        if not self.restriccion_de_funcion(self.fitness[idx], self.noViolaciones[idx], current_fitness, current_violaciones):
-            
-            self.gbestFitness = current_fitness
-            
-            self.gbestViolacion = current_violaciones
-            
-            self.gbestIndividuo = self.poblacion[idx]
-            
+        if not self.restriccion_de_funcion(current_fitness, current_violaciones, self.fitness[idx], self.noViolaciones[idx]):
             # Si es mejor se guarda en la poblacion idx
             self.fitness[idx] = current_fitness
             # Y se guarda el individuo de prueba en la poblacion
@@ -131,12 +123,14 @@ class DE(Algoritmo):
             self.poblacion[idx] = trial
    
 
-    def reporte(self):    
+    def reporte(self):
+        best_idx = np.argmin(self.fitness)
+        
         print("================================")
         print("Solución Óptima")
-        print("Individuo:", self.gbestIndividuo)
-        print("Aptitud (Fitness):", self.gbestFitness)
-        print("Num Violaciones:", self.gbestViolacion)
+        print("Individuo:", self.poblacion[best_idx])
+        print("Aptitud (Fitness):", self.fitness[best_idx])
+        print("Num Violaciones:", self.noViolaciones[best_idx])
         print("================================")
     
     # Funcion principal para ejecutar el algoritmo
