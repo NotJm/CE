@@ -13,14 +13,7 @@ class DE(Algoritmo):
     # Numero de infracciones que ocasiono un individuo de la poblacion
     noViolaciones = np.zeros(SIZE_POBLATION)
     
-    # Mejor aptitud de la particula
-    gbestFitness = 0
-    # Mejor violacion de la particula <= 0
-    gbestViolacion = 0
-    # Mejor particula de la generacion
-    gbestIndividuo = []
-    
-    # Factor de escalado
+    # Factor de mutacion
     F = 0.7
     # Tasa de recombinacion
     CR = 0.9
@@ -52,8 +45,17 @@ class DE(Algoritmo):
         # Creacion aleatoria de la poblacion
         self.poblacion = self.generar(self.superior, self.inferior)
         
+        # Mejor aptitud de la partícula
+        self.gbestFitness = float('inf')
+        # Mejor violación de la partícula <= 0
+        self.gbestViolacion = float('inf')
+        # Mejor partícula de la generación
+        self.gbestIndividuo = None
+
+        
         # Calculo de fitness y suma de violaciones
         self.calcularFitnessYSumaDeViolaciones()
+        
 
 
     # Calculo del fitness para cada individuo de la poblacion
@@ -107,21 +109,29 @@ class DE(Algoritmo):
     
     # Operador de seleccion
     def seleccionDeIndividuos(self, idx, trial):
-        current_fitness = self.evaluar(trial)
+        trial_fitness = self.evaluar(trial)
         
-        current_violaciones = Restricciones.suma_violaciones(
+        trial_violaciones = Restricciones.suma_violaciones(
                 self.g_funcs, self.h_funcs, trial
         )
         
+        current_fitness = self.fitness[idx]
+        current_violaciones = self.noViolaciones[idx]
+        
         
         # Se compara con los fitness 
-        if not self.restriccion_de_funcion(self.fitness[idx], self.noViolaciones[idx], current_fitness, current_violaciones):
+        if not self.restriccion_de_funcion(current_fitness, current_violaciones, trial_fitness, trial_violaciones):
             
-            self.gbestFitness = current_fitness
+            # Se compara el antiguo gbest con el actual
+            if not self.restriccion_de_funcion(self.gbestFitness, self.gbestViolacion, trial_fitness, trial_violaciones):
+                        
+                self.gbestFitness = trial_fitness
+                
+                self.gbestViolacion = trial_violaciones
+                
+                self.gbestIndividuo = trial
             
-            self.gbestViolacion = current_violaciones
             
-            self.gbestIndividuo = self.poblacion[idx]
             
             # Si es mejor se guarda en la poblacion idx
             self.fitness[idx] = current_fitness

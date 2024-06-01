@@ -193,7 +193,6 @@ class PSO(Algoritmo):
             total=GENERATIONS,
             desc="Optimizando",
             unit="iter",
-            ncols=95,
             bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
         ) as bar:
             while generacion <= GENERATIONS:
