@@ -226,6 +226,130 @@ class CEC2020_RC04(Problem):
     @staticmethod
     def CEC2020_RC04_h1(x):
         return x[4] + x[3] + x[2] + x[1] 
+    
+    @staticmethod
+    def CEC2020_RC04_h2(x):
+        return x[6] +  x[8] + x[7] # restriccion de igualdad de 0 
+
+    @staticmethod
+    def CEC2020_RC04_h3(x):
+        return x[9] + x[11] + x[10] + x[12] # restriccion de igualdad de 0 
+
+    @staticmethod
+    def CEC2020_RC04_h4(x):
+        return x[14] + x[16] + x[17] + x[15] # restriccion de igualdad de 0 
+
+    @staticmethod
+    def CEC2020_RC04_h5(x):
+        return x[18] + x[20] + x[19] # restriccion de igualdad de 0 
+
+    @staticmethod
+    def CEC2020_RC04_h6(x):
+        return x[5] * x[21]  -  x[6] * x[22]  -  x[9] * x[23] 
+
+    @staticmethod 
+    def CEC2020_RC04_h7(x):
+        return  x[5] * x[24]  -  x[6] * x[25]  -  x[9] * x[26] # restricciones de igualdad de 0 
+
+    @staticmethod 
+    def CEC2020_RC04_h8(x):
+        return x[5] * x[27]  -  x[6] * x[28]  -  x[9] * x[29] # restricciones de igualdad de 0 
+
+    @staticmethod
+    def CEC2020_RC04_h9(x):
+        return x[13] * x[30]  -  x[14] * x[31]  -  x[18] * x[32] # restricciones de igualdad de 0 
+
+    @staticmethod
+    def CEC2020_RC04_h10(x):
+        return x[13] * x[33]  -  x[14] * x[34]  -  x[18] * x[35] # restricciones de igualdad de 0 
+
+    @staticmethod
+    def CEC2020_RC04_h11(x):
+        return x[13] * x[36]  -  x[14] * x[37]  -  x[18] * x[35] # restricciones de igualdad de 0 13
+
+    @staticmethod
+    def CEC2020_RC04_h12(x):
+        return 0.333[1]   +   x[15] * x[31]  -  x[5] * x[21]    # restricciones de igualdad de 0 
+
+    @staticmethod
+    def CEC2020_RC04_h13(x):
+        return 0.333[1]   +   x[15] * x[34]  -  x[5] * x[24]    # restricciones de igualdad de 0 
+
+    @staticmethod
+    def CEC2020_RC04_h14(x):
+        return  0.333[1]   +   x[15] * x[37]  -  x[5] * x[27]    # restricciones de igualdad de 0  
+
+    @staticmethod
+    def CEC2020_RC04_h15(x):
+        return  0.333[2]   +   x[10] * x[23]  -  x[13] * x[30]    # restricciones de igualdad de 0  
+
+    @staticmethod
+    def CEC2020_RC04_h16(x):
+        return  0.333[2]   +   x[10] * x[26]  -  x[13] * x[33]    # restricciones de igualdad de 0  
+
+    @staticmethod
+    def CEC2020_RC04_h17(x):
+        return  0.333[2]   +   x[10] * x[29]  -  x[13] * x[36]    # restricciones de igualdad de 0
+
+    @staticmethod
+    def CEC2020_RC04_h18(x):
+        return  0.333[3]   +   x[7] * x[22] +   x[11] * x[23]  +   x[16] * x[31] +   x[19] * x[32]     # restricciones de igualdad de 30
+
+    @staticmethod
+    def CEC2020_RC04_h19(x):
+        return  0.333[3]   +   x[7] * x[25] +   x[11] * x[26]  +   x[16] * x[34] +   x[19] * x[35]     # restricciones de igualdad de 50
+
+    @staticmethod
+    def CEC2020_RC04_h20(x):
+        return  0.333[3]   +   x[7] * x[28] +   x[11] * x[29]  +   x[16] * x[37] +   x[19] * x[38]     # restricciones de igualdad de 30
+
+    @staticmethod
+    def CEC2020_RC04_h21(x):
+        return x[21] + x[24] + x[27]      # restricciones de igualdad de 1
+
+    @staticmethod
+    def CEC2020_RC04_h22(x):
+        return x[22] + x[25] + x[28]      # restricciones de igualdad de 1
+
+    @staticmethod
+    def CEC2020_RC04_h23(x):
+        return x[23] + x[26] + x[29]      # restricciones de igualdad de 1
+
+    @staticmethod
+    def CEC2020_RC04_h24(x):
+        return x[30] + x[33] + x[36]      # restricciones de igualdad de 1
+
+    @staticmethod
+    def CEC2020_RC04_h25(x):
+        return x[31] + x[34] + x[37]      # restricciones de igualdad de 1
+
+    @staticmethod
+    def CEC2020_RC04_h26(x):
+        return x[32] + x[35] + x[38]      # restricciones de igualdad de 1
+    
+    @staticmethod 
+    def CEC2020_RC04_h27(x):
+        return x[25] 
+    
+    @staticmethod
+    def CEC2020_RC04_h28(x):
+        return x[28]
+    
+    @staticmethod
+    def CEC2020_RC04_h29(x):
+       return x[23]
+   
+    @staticmethod
+    def CEC2020_RC04_h30(x):
+       return x[37]
+   
+    @staticmethod
+    def CEC2020_RC04_h31(x):
+       return x[32]
+   
+    @staticmethod
+    def CEC2020_RC04_h32(x):
+       return x[35] 
 
 #********************************************************************************************************************************
 
