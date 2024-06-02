@@ -131,8 +131,6 @@ class DE(Algoritmo):
                 
                 self.gbestIndividuo = trial
             
-            
-            
             # Si es mejor se guarda en la poblacion idx
             self.fitness[idx] = current_fitness
             # Y se guarda el individuo de prueba en la poblacion
