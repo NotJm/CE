@@ -141,6 +141,7 @@ class DE(Algoritmo):
 
     def reporte(self):    
         print("================================")
+        print("Reporte DE")
         print("Solución Óptima")
         print("Individuo:", self.gbestIndividuo)
         print("Aptitud (Fitness):", self.gbestFitness)

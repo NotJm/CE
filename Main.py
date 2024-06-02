@@ -28,7 +28,7 @@ from problems.cec2022problems import CEC2022_ZakharovF, CEC2022_RosenbrockF, SUP
 
 
 
-problema = CEC2006_G01()
+problema = CEC2020_RC01()
 
 
 def main():
@@ -50,6 +50,7 @@ def main():
         # mejor_solucion_csv(pso.gbestParticula,pso.gbestAptitud, pso.gbestViolacion,"Prueba_Reflex.csv")
         
         de = DE(
+<<<<<<< HEAD
                 Limite.reflex,
                 problema.fitness,
                 problema.SUPERIOR,
@@ -58,6 +59,16 @@ def main():
                 problema.rest_g,
                 problema.rest_h
             )
+=======
+            Limite.reflex,
+            problema.fitness,
+            problema.SUPERIOR,
+            problema.INFERIOR,
+            Restricciones.aEsMejorQueB_deb,
+            problema.rest_g,
+            problema.rest_h
+        )
+>>>>>>> b680dfd72ba485a19605e134fe78ab717e281cf1
         de.run()   
 
 
