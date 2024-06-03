@@ -103,7 +103,7 @@ class CEC2020_RC02(Problem):
     
     @staticmethod
     def CEC2020_RC02_h1(x):
-        return  x[18] * x[30] - x[31] * x[32]   # restriccion de igualdad = 0
+        return x[0] - 10**4 * (x[6] - 100)   # restriccion de igualdad = 0
     
     @staticmethod
     def CEC2020_RC02_h2(x):
