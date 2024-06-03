@@ -48,15 +48,8 @@ class DE(Algoritmo):
         # Calculo de fitness y suma de violaciones
         self.calcularFitnessYSumaDeViolaciones()
 
-        # Mejor posicion en la generacion 0
-        self.posicionInicial = 0
-
-        # Mejor aptitud de la partícula
-        self.gbestFitness = self.fitness[0]
-        # Mejor violación de la partícula <= 0
-        self.gbestViolacion = self.noViolaciones[0]
-        # Mejor partícula de la generación
-        self.gbestIndividuo = self.poblacion[0]
+        self.obtenerGbestPoblacion0()
+        
 
     # Calculo del fitness para cada individuo de la poblacion
     # y calcular la suma de violaciones que tuvo el individuo
@@ -123,14 +116,35 @@ class DE(Algoritmo):
             self.fitness[idx] = trial_fitness
             self.noViolaciones[idx] = trial_violaciones
             self.poblacion[idx] = trial
-            return True
-        return False
-                
-    def actualizarGbest(self, trial, trial_fitness, trial_violaciones):
-        if not self.restriccion_de_funcion(self.gbestFitness, self.gbestViolacion, trial_fitness, trial_violaciones):
-            self.gbestFitness = trial_fitness
-            self.gbestViolacion = trial_violaciones
-            self.gbestIndividuo = trial
+    
+    def obtenerGbestPoblacion0(self):
+        # Mejor posicion en la generacion 0
+        self.posicionInicial = 0
+
+        # Mejor aptitud de la partícula
+        self.gbestFitness = self.fitness[0]
+        # Mejor violación de la partícula <= 0
+        self.gbestViolacion = self.noViolaciones[0]
+        # Mejor partícula de la generación
+        self.gbestIndividuo = self.poblacion[0]
+        
+        self.actualizarPosicionGbestDePoblacion()
+                        
+    def actualizarPosicionGbestDePoblacion(self):
+        for x in range(SIZE_POBLATION):
+
+            current_fitness = self.fitness[x]
+            current_violacion = self.noViolaciones[x]
+
+            if not self.restriccion_de_funcion(
+                self.gbestFitness,
+                self.gbestViolacion,
+                current_fitness,
+                current_violacion,
+            ):
+                self.gbestFitness = current_fitness
+                self.gbestViolacion = current_violacion
+                self.gbestParticula = self.poblacion[x]
 
     def reporte(self):
         print("================================")
@@ -148,5 +162,6 @@ class DE(Algoritmo):
                 mutante = self.mutacionDeIndividuo(i)
                 prueba = self.cruzeDeIndividuos(objetivo, mutante)
                 prueba = self.limite(self.superior, self.inferior, prueba)
-                if self.seleccionDeIndividuos(i, prueba):
-                    self.actualizarGbest(prueba, self.fitness[i], self.noViolaciones[i])
+                self.seleccionDeIndividuos(i, prueba)
+                
+            self.actualizarPosicionGbestDePoblacion()
