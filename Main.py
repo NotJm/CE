@@ -28,7 +28,7 @@ from problems.cec2022problems import CEC2022_ZakharovF, CEC2022_RosenbrockF, SUP
 
 
 
-problema = CEC2006_G01()
+problema = CEC2022_RosenbrockF()
 
 
 def main():
@@ -58,7 +58,8 @@ def main():
             problema.rest_g,
             problema.rest_h
         )
-        de.run()   
+        de.run()
+        de.reporte() 
 
 
 if __name__ == "__main__":
