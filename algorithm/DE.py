@@ -117,8 +117,8 @@ class DE(Algoritmo):
         current_violaciones = self.noViolaciones[idx]
 
         # Verificar si el individuo de prueba es mejor que el actual
-        if self.restriccion_de_funcion(
-            trial_fitness, trial_violaciones, current_fitness, current_violaciones
+        if not self.restriccion_de_funcion(
+            current_fitness, current_violaciones, trial_fitness, trial_violaciones
         ):
             self.fitness[idx] = trial_fitness
             self.noViolaciones[idx] = trial_violaciones
@@ -127,7 +127,7 @@ class DE(Algoritmo):
         return False
                 
     def actualizarGbest(self, trial, trial_fitness, trial_violaciones):
-        if self.restriccion_de_funcion(trial_fitness, trial_violaciones, self.gbestFitness, self.gbestViolacion):
+        if not self.restriccion_de_funcion(self.gbestFitness, self.gbestViolacion, trial_fitness, trial_violaciones):
             self.gbestFitness = trial_fitness
             self.gbestViolacion = trial_violaciones
             self.gbestIndividuo = trial
