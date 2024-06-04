@@ -64,3 +64,43 @@ class Limite:
                 )
                 
         return individuo_corregido
+    
+     # Método del faro para atraer partículas fuera de los límites hacia el centro del espacio de búsqueda
+    @staticmethod
+    def faro(superior, inferior, individuo, margen = 0.1):
+        centro = (superior + inferior) / 2
+        distancia = np.linalg.norm(individuo - centro)
+        if distancia > margen:
+            direccion = centro - individuo
+            individuo += 0.1 * direccion  # Factor de atracción ajustable
+        return individuo
+    
+    @staticmethod
+    def attract(superior, inferior, individuo, atraccion=0.1):
+        centro = (np.array(superior) + np.array(inferior)) / 2
+        if any(individuo < inferior) or any(individuo > superior):
+            direccion = centro - individuo
+            individuo += atraccion * direccion
+        return individuo
+    
+    @staticmethod
+    def restriccion_ajuste_aptitud(superior, inferior, individuo, evaluar, max_intentos=100):
+        # Ajustar la posición hacia un punto dentro de los límites con alta aptitud
+        for _ in range(max_intentos):
+            nueva_posicion = np.random.uniform(inferior, superior)
+            if evaluar(nueva_posicion) > evaluar(individuo):
+                return nueva_posicion
+        # Si no se encuentra una posición con alta aptitud, se mantiene la posición actual
+        return individuo
+    
+    # Método collision para manejar colisiones entre partículas
+    def collision(particles: list):
+        n = len(particles)
+        for i in range(n):
+            for j in range(i + 1, n):
+                if np.linalg.norm(particles[i] - particles[j]) < 0.1:  # Definir umbral de colisión adecuado
+                    # Ajustar velocidades de las partículas i y j (simulando el efecto de la colisión)
+                    particles[i].velocity *= -1
+                    particles[j].velocity *= -1
+                    # Puede ser necesario ajustar las posiciones también
+

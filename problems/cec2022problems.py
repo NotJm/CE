@@ -1,17 +1,16 @@
 import numpy as np
 from .Problem import Problem, ProblemType
 
-INF = 1.0e99
+INF = np.inf
 EPS = 1.0e-14
 E  = np.e
 PI = np.pi
-D = 10
+D = 2
 
 SUPERIOR = np.array([100] * D)
 INFERIOR = np.array([-100] * D)
 
 
-#F_values = [300, 400, 600, 800, 900, 1080, 2000, 2200, 2300, 2400, 2600, 2700]
 
 class CEC2022_ZakharovF(Problem):
     def __init__(self):
@@ -43,9 +42,3 @@ class CEC2022_RosenbrockF(Problem):
             result += 100 * (x[i]**2 - x[i + 1])**2 + (x[i + 1] - 1)**2
         return result
 
-""" # Ejemplo de uso
-if __name__ == "__main__":
-    problem = CEC2022_ZakharovF()
-    x = np.random.uniform(INFERIOR, SUPERIOR, D)
-    print("Evaluación de la Función Zakharov:", problem.fitness(x)) 
-"""

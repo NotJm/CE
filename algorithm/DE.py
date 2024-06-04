@@ -1,6 +1,6 @@
 from utils.constantes import SIZE_POBLATION, GENERATIONS
-from core.Restricciones import Restricciones
-from core.Algoritmo import Algoritmo
+from core.restricciones import Restricciones
+from core.algoritmo import Algoritmo
 from tqdm import tqdm
 import numpy as np
 

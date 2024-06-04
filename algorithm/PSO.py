@@ -1,6 +1,7 @@
 from utils.constantes import SIZE_POBLATION, GENERATIONS
-from core.Restricciones import Restricciones
-from core.Algoritmo import Algoritmo
+from core.restricciones import Restricciones
+from core.algoritmo import Algoritmo
+from core.limites import Limite
 from utils.logging import configuracionDeLoggin
 from tqdm import tqdm
 import numpy as np
@@ -30,14 +31,7 @@ class PSO(Algoritmo):
     # Mejor particula de la generacion
     gbestParticula = []
     # Mejor velocidad de la particula
-    gbestVelocidad = []
-
-    # Factor de inercia
-    W = 0.95
-    # Coeficiente aceleracion cognitiva
-    C1 = 1.4944
-    # Coeficiente aceleracion social
-    C2 = 1.4944
+    gbestVelocidad = []    
 
     def __init__(
         self,
@@ -49,9 +43,20 @@ class PSO(Algoritmo):
         correcion_de_velocidad,  # Funcion de Estrategia de actualizacion de velocidad
         g_funcs=[],  # Lista de funciones de desigualdad <= 0
         h_funcs=[],  # Lista de funciones de igualdad == 0
+        W = 0.729,
+        C1 = 1.49445,
+        C2 = 1.49445
     ):
         # Configuracion de loggin 
         self.logging = configuracionDeLoggin("pso_reporte.log")
+        
+        # Configuracion de PSO
+        
+        self.W = W # Factor de inercia
+    
+        self.C1 = C1  #Coeficiente aceleracion cognitiva
+    
+        self.C2 = C2 # Coeficiente aceleracion social
                 
         # Funcion limite a ocupar
         self.limite = limite
@@ -168,8 +173,11 @@ class PSO(Algoritmo):
     def restriccionLimites(self):
         for index in range(SIZE_POBLATION):
             if not self.isValid(self.superior, self.inferior, self.particulas[index]):
-                self.particulas[index] = self.limite(
-                    self.superior, self.inferior, self.particulas[index]
+                # self.particulas[index] = self.limite(
+                #     self.superior, self.inferior, self.particulas[index]
+                # )
+                self.particulas[index] = Limite.restriccion_ajuste_aptitud(
+                    self.superior, self.inferior, self.particulas[index], self.evaluar
                 )
                 self.velocidad[index] = self.act_vel(self.velocidad[index])
 
