@@ -28,7 +28,7 @@ from problems.cec2022problems import CEC2022_ZakharovF, CEC2022_RosenbrockF, SUP
 
 
 
-problema = CEC2020_RC01()
+problema = CEC2006_G01()
 
 
 def main():
